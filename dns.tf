@@ -9,7 +9,7 @@ resource "aws_service_discovery_private_dns_namespace" "internal" {
 # For both internal and external use public hosted zone
 data "aws_route53_zone" "route53_zone" {
   name         = var.route53_hosted_zone_name
-  private_zone = true #need to be false
+  private_zone = false #need to be false
 }
 
 resource "aws_route53_record" "application" {
