@@ -1,15 +1,15 @@
 # Setup DNS Discovery
 resource "aws_service_discovery_private_dns_namespace" "internal" {
   # This name does not follow convention because it is used as part of the domain name
-  name        = "${var.cluster_name}.${var.account_alias}.internal"
-  description = "Service Discovery for internal communcation for ${var.cluster_name} ECS cluster"
+  name        = "${local.cluster_name}.internal"
+  description = "Service Discovery for internal communcation for ${local.cluster_name} ECS cluster"
   vpc         = var.vpc_id
 }
 
 # For both internal and external use public hosted zone
 data "aws_route53_zone" "route53_zone" {
   name         = var.route53_hosted_zone_name
-  private_zone = false #need to be false
+  private_zone = false
 }
 
 resource "aws_route53_record" "application" {

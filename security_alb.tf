@@ -1,12 +1,12 @@
 # ALB Security group
 resource "aws_security_group" "alb" {
-  name        = "${var.cluster_name}-sg-alb"
+  name        = "${local.cluster_name}-alb-sg"
   description = "Access to the ALB"
   vpc_id      = var.vpc_id
 
   tags = merge({
-    Name = "${var.cluster_name}-sg-alb"
-  }, var.custom_tags)
+    Name = "${local.cluster_name}-alb-sg"
+  }, local.tags)
 }
 
 resource "aws_security_group_rule" "public_to_alb" {

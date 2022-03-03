@@ -1,7 +1,26 @@
-variable "cluster_name" {
+/* -------------------------------------------------------------------------- */
+/*                                   Generic                                  */
+/* -------------------------------------------------------------------------- */
+
+variable "name" {
   description = "Name of the ECS cluster to create"
   type        = string
 }
+
+variable "environment" {
+  description = "Environment Variable used as a prefix"
+  type        = string
+}
+
+variable "prefix" {
+  description = "The prefix name of customer to be displayed in AWS console and resource"
+  type        = string
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                 ECS Cluster                                */
+/* -------------------------------------------------------------------------- */
+
 
 variable "vpc_id" {
   description = "VPC to deploy the cluster in"
@@ -35,16 +54,6 @@ variable "custom_tags" {
   default     = {}
 }
 
-# variable "alb_access_logs_bucket" {
-#   description = "AWS ALB Access Logs Bucket"
-#   type        = string
-# }
-
-variable "account_alias" {
-  description = "Alias of the AWS account where this service is created. Eg. alpha/beta/prod. This would be used create s3 bucket path in the logging account"
-  type        = string
-}
-
 variable "certificate_arn" {
   description = "Certitificate ARN to link with ALB"
   type        = string
@@ -71,3 +80,13 @@ variable "fully_qualified_domain_name" {
   description = "The domain name for the ACM cert for attaching to the ALB i.e. *.example.com, www.amazing.com"
   type        = string
 }
+
+# variable "alb_access_logs_bucket" {
+#   description = "AWS ALB Access Logs Bucket"
+#   type        = string
+# }
+
+# variable "account_alias" {
+#   description = "Alias of the AWS account where this service is created. Eg. alpha/beta/prod. This would be used create s3 bucket path in the logging account"
+#   type        = string
+# }

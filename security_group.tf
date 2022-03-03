@@ -1,10 +1,10 @@
 resource "aws_security_group" "ecs_tasks" {
-  name   = "${var.cluster_name}-sg-ecs-tasks"
+  name   = "${local.cluster_name}-ecs-tasks-sg"
   vpc_id = var.vpc_id
 
   tags = merge({
-    Name = "${var.cluster_name}-sg-ecs-tasks"
-  }, var.custom_tags)
+    Name = "${local.cluster_name}-ecs-tasks-sg"
+  }, local.tags)
 }
 
 resource "aws_security_group_rule" "tasks_to_tasks_tcp" {
