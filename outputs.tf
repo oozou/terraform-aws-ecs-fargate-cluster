@@ -3,15 +3,20 @@
 #   value       = var.public_alb == true ? aws_lb.main_public[0].dns_name : aws_lb.main_private[0].dns_name
 # }
 
-# output "ecs_cluster_id" {
-#   description = ""
-#   value       = aws_ecs_cluster.main.id
-# }
+output "ecs_cluster_arn" {
+  description = "ARN that identifies the cluster."
+  value       = aws_ecs_cluster.this.arn
+}
 
-# output "ecs_cluster_name" {
-#   description = ""
-#   value       = aws_ecs_cluster.main.name
-# }
+output "ecs_cluster_id" {
+  description = "ID that identifies the cluster."
+  value       = aws_ecs_cluster.this.id
+}
+
+output "ecs_cluster_name" {
+  description = "Name of the cluster"
+  value       = aws_ecs_cluster.this.name
+}
 
 # output "service_discovery_namespace" {
 #   description = ""
