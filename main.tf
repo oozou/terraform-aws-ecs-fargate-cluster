@@ -17,6 +17,7 @@ locals {
 }
 /* ---------------------------- Assert condition ---------------------------- */
 locals {
+  assert_create_both_sg_group     = var.is_create_ecs_task_security_group == var.is_create_alb_security_group ? "pass" : file("is_create_ecs_task_security_group and is_create_alb_security_group must equal")
   assert_ecs_security_group_empty = var.is_create_ecs_task_security_group || (var.is_create_ecs_task_security_group == false && length(var.ecs_task_security_group_id) > 0) ? "pass" : file("Variable `ecs_task_security_group_id` is required when `is_create_ecs_task_security_group` is false")
   assert_alb_security_group_empty = var.is_create_alb_security_group || (var.is_create_alb_security_group == false && length(var.alb_aws_security_group_id) > 0) ? "pass" : file("Variable `alb_aws_security_group_id` is required when `is_create_alb_security_group` is false")
   assert_principle_empty          = var.is_create_role && length(var.allow_access_from_principals) > 0 ? "pass" : file("Variable `allow_access_from_principals` is required when `is_create_role` is true")
@@ -87,18 +88,18 @@ resource "aws_security_group_rule" "tasks_to_world" {
 
 # We want all Fargate traffic to come from the ALB and within the subnet
 # We aren't locking down ports but that it must come from ALB
-# resource "aws_security_group_rule" "alb_to_tasks" {
-#   count = var.is_create_ecs_task_security_group ? 1 : 0
+resource "aws_security_group_rule" "alb_to_tasks" {
+  count = var.is_create_ecs_task_security_group ? 1 : 0
 
-#   security_group_id = local.ecs_task_security_group_id
+  security_group_id = local.ecs_task_security_group_id
 
-#   source_security_group_id = aws_security_group.alb.id
+  source_security_group_id = local.alb_aws_security_group_id
 
-#   type      = "ingress"
-#   from_port = 0
-#   to_port   = 65535
-#   protocol  = "tcp"
-# }
+  type      = "ingress"
+  from_port = 0
+  to_port   = 65535
+  protocol  = "tcp"
+}
 
 /* -------------------------------------------------------------------------- */
 /*                             ALB Security Group                             */
@@ -137,19 +138,18 @@ resource "aws_security_group_rule" "public_to_alb_http" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-# TODO check if ness when not create self alb sg
-# resource "aws_security_group_rule" "leaving_alb" {
-#   count = var.is_create_alb_security_group ? 1 : 0
+resource "aws_security_group_rule" "leaving_alb" {
+  count = var.is_create_alb_security_group ? 1 : 0
 
-#   security_group_id        = local.alb_aws_security_group_id
+  security_group_id = local.alb_aws_security_group_id
 
-#   source_security_group_id = local.ecs_task_security_group_id
+  source_security_group_id = local.ecs_task_security_group_id
 
-#   type      = "egress"
-#   from_port = 0
-#   to_port   = 0
-#   protocol  = -1
-# }
+  type      = "egress"
+  from_port = 0
+  to_port   = 0
+  protocol  = -1
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                     ALB                                    */
