@@ -17,11 +17,15 @@ variable "prefix" {
   type        = string
 }
 
+variable "tags" {
+  description = "Custom tags which can be passed on to the AWS resources. They should be key value pairs having distinct keys"
+  type        = map(any)
+  default     = {}
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                 ECS Cluster                                */
 /* -------------------------------------------------------------------------- */
-
-
 variable "vpc_id" {
   description = "VPC to deploy the cluster in"
   type        = string
@@ -46,12 +50,6 @@ variable "alb_listener_port" {
   description = "The port to listen on the ALB for public services (80/443, default 443)"
   type        = number
   default     = 443
-}
-
-variable "custom_tags" {
-  description = "Custom tags which can be passed on to the AWS resources. They should be key value pairs having distinct keys"
-  type        = map(any)
-  default     = {}
 }
 
 variable "certificate_arn" {
