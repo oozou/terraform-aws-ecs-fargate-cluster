@@ -4,6 +4,8 @@
 locals {
   cluster_name = "${var.prefix}-${var.environment}-${var.name}"
 
+  alb_aws_security_group_id = var.is_create_alb_security_group ? aws_security_group.alb[0].id : var.alb_aws_security_group_id
+
   tags = merge(
     {
       "Environment" = var.environment,
@@ -14,7 +16,8 @@ locals {
 }
 /* ----------------------------- Raise exception ---------------------------- */
 locals {
-  assert_principle_empty = var.is_create_role && length(var.allow_access_from_principals) > 0 ? "pass" : file("Variable `allow_access_from_principals` is required when `is_create_role` is true")
+  assert_alb_security_group_empty = var.is_create_alb_security_group || (var.is_create_alb_security_group == false && length(var.alb_aws_security_group_id) > 0) ? "pass" : file("Variable `alb_aws_security_group_id` is required when `is_create_alb_security_group` is false")
+  assert_principle_empty          = var.is_create_role && length(var.allow_access_from_principals) > 0 ? "pass" : file("Variable `allow_access_from_principals` is required when `is_create_role` is true")
 }
 
 /* -------------------------------------------------------------------------- */
@@ -29,8 +32,138 @@ resource "aws_ecs_cluster" "this" {
   )
 }
 /* -------------------------------------------------------------------------- */
+/*                             ALB Security Group                             */
+/* -------------------------------------------------------------------------- */
+# ALB Security group
+resource "aws_security_group" "alb" {
+  count = var.is_create_alb_security_group ? 1 : 0
+
+  name        = format("%s-alb-sg", local.cluster_name)
+  description = format("Security group for ALB %s-alb", local.cluster_name)
+  vpc_id      = var.vpc_id
+
+  tags = merge(local.tags, { "Name" = format("%s-alb-sg", local.cluster_name) })
+}
+
+resource "aws_security_group_rule" "public_to_alb" {
+  count = var.is_create_alb_security_group ? 1 : 0
+
+  security_group_id = local.alb_aws_security_group_id
+
+  type        = "ingress"
+  from_port   = var.alb_listener_port
+  to_port     = var.alb_listener_port
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+# HTTP traffic is redirected to HTTPS
+resource "aws_security_group_rule" "public_to_alb_http" {
+  count = var.is_create_alb_security_group ? 1 : 0
+
+  type        = "ingress"
+  from_port   = 80
+  to_port     = 80
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+
+  security_group_id = local.alb_aws_security_group_id
+}
+
+# resource "aws_security_group_rule" "leaving_alb" {
+#   count = var.is_create_alb_security_group ? 1 : 0
+
+#   type      = "egress"
+#   from_port = 0
+#   to_port   = 0
+#   protocol  = -1
+
+#   security_group_id        = local.alb_aws_security_group_id
+#   source_security_group_id = aws_security_group.ecs_tasks.id
+# }
+
+/* -------------------------------------------------------------------------- */
 /*                                     ALB                                    */
 /* -------------------------------------------------------------------------- */
+# Define the routing for the workloads
+# Application Load Balancer Creation (ALB) in the DMZ
+# resource "aws_lb" "main_public" {
+#   count = var.is_public_alb ? 1 : 0
+
+#   name                       = format("%s-alb", local.cluster_name)
+#   load_balancer_type         = "application"
+#   internal                   = false
+#   subnets                    = var.public_subnet_ids
+#   security_groups            = [aws_security_group.alb.id]
+#   drop_invalid_header_fields = true
+#   enable_deletion_protection = false
+
+#   # access_logs {
+#   #   bucket  = var.alb_access_logs_bucket
+#   #   prefix  = "${var.account_alias}/${var.cluster_name}-alb"
+#   #   enabled = true
+#   # }
+
+#   tags = merge(local.tags, { "Name" : format("%s-alb", local.cluster_name) })
+# }
+
+# resource "aws_lb" "main_private" {
+#   count = var.is_public_alb == false ? 1 : 0
+
+#   name                       = "${local.cluster_name}-internal-alb"
+#   load_balancer_type         = "application"
+#   internal                   = true
+#   subnets                    = var.private_subnet_ids
+#   security_groups            = [aws_security_group.alb.id]
+#   drop_invalid_header_fields = true
+#   enable_deletion_protection = false
+
+#   # access_logs {
+#   #   bucket  = var.alb_access_logs_bucket
+#   #   prefix  = "${var.account_alias}/${var.cluster_name}-alb-internal"
+#   #   enabled = true
+#   # }
+
+#   tags = merge({
+#     Name = "${local.cluster_name}-alb-internal"
+#   }, local.tags)
+# }
+
+# resource "aws_lb_listener" "http" {
+#   load_balancer_arn = var.is_public_alb == false ? aws_lb.main_private[0].id : aws_lb.main_public[0].id
+
+#   port            = var.alb_listener_port
+#   protocol        = var.alb_listener_port == 443 ? "HTTPS" : "HTTP"
+#   certificate_arn = var.alb_listener_port == 443 ? var.certificate_arn : ""
+#   ssl_policy      = var.alb_listener_port == 443 ? "ELBSecurityPolicy-FS-1-2-Res-2019-08" : ""
+
+#   default_action {
+#     type = "fixed-response"
+
+#     fixed_response {
+#       content_type = "text/plain"
+#       message_body = "No service found"
+#       status_code  = "503"
+#     }
+#   }
+# }
+
+# resource "aws_lb_listener" "front_end_https_http_redirect" {
+#   load_balancer_arn = var.is_public_alb == false ? aws_lb.main_private[0].id : aws_lb.main_public[0].id
+
+#   port     = "80"
+#   protocol = "HTTP"
+
+#   default_action {
+#     type = "redirect"
+
+#     redirect {
+#       port        = "443"
+#       protocol    = "HTTPS"
+#       status_code = "HTTP_301"
+#     }
+#   }
+# }
 
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
@@ -59,8 +192,8 @@ resource "aws_service_discovery_private_dns_namespace" "internal" {
 #   type    = "A"
 
 #   alias {
-#     name                   = var.public_alb == true ? lower(aws_lb.main_public[0].dns_name) : lower(aws_lb.main_private[0].dns_name)
-#     zone_id                = var.public_alb == true ? aws_lb.main_public[0].zone_id : aws_lb.main_private[0].zone_id
+#     name                   = var.is_public_alb ? lower(aws_lb.main_public[0].dns_name) : lower(aws_lb.main_private[0].dns_name)
+#     zone_id                = var.is_public_alb ? aws_lb.main_public[0].zone_id : aws_lb.main_private[0].zone_id
 #     evaluate_target_health = true
 #   }
 # }

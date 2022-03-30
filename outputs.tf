@@ -18,17 +18,7 @@ output "ecs_access_role_arn" {
   description = "Amazon Resource Name (ARN) specifying the role."
   value       = element(concat(aws_iam_role.this[*].arn, [""]), 0)
 }
-/* ----------------------------------- DNS ---------------------------------- */
-output "service_discovery_namespace" {
-  description = "The ID of a namespace."
-  value       = aws_service_discovery_private_dns_namespace.internal.id
-}
-
-
-
-
-
-
+/* ----------------------------------- ALB ---------------------------------- */
 # output "alb_hostname" {
 #   description = ""
 #   value       = var.public_alb == true ? aws_lb.main_public[0].dns_name : aws_lb.main_private[0].dns_name
@@ -49,12 +39,24 @@ output "service_discovery_namespace" {
 # #   value = aws_lb_listener.front_end_https_http_redirect.arn
 # # }
 
-# output "ecs_task_security_group_ids" {
-#   description = ""
-#   value       = [aws_security_group.ecs_tasks.id]
-# }
-
 # output "alb_dns_name" {
 #   description = ""
 #   value       = var.public_alb == true ? aws_lb.main_public[0].dns_name : aws_lb.main_private[0].dns_name
+# }
+
+/* ----------------------------------- DNS ---------------------------------- */
+output "service_discovery_namespace" {
+  description = "The ID of a namespace."
+  value       = aws_service_discovery_private_dns_namespace.internal.id
+}
+
+
+
+
+
+
+
+# output "ecs_task_security_group_ids" {
+#   description = ""
+#   value       = [aws_security_group.ecs_tasks.id]
 # }

@@ -30,6 +30,61 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "public_subnet_ids" {
+  description = "Public subnets for AWS Application Load Balancer deployment"
+  type        = list(string)
+}
+
+# variable "private_subnet_ids" {
+#   description = "Private subnets for container deployment"
+#   type        = list(string)
+# }
+/* -------------------------------------------------------------------------- */
+/*                                     ALB                                    */
+/* -------------------------------------------------------------------------- */
+/* ----------------------------- Security Group ----------------------------- */
+variable "is_create_alb_security_group" {
+  description = "Whether to create ALB security group or not"
+  type        = bool
+  default     = true
+}
+variable "alb_aws_security_group_id" {
+  type        = string
+  description = "(Require) when is_create_alb_security_group is set to `false`"
+  default     = ""
+}
+
+variable "alb_listener_port" {
+  description = "The port to listen on the ALB for public services (80/443, default 443)"
+  type        = number
+  default     = 443
+}
+
+/* ----------------------------------- ALB ---------------------------------- */
+# variable "is_public_alb" {
+#   description = "Flag for Internal/Public ALB. ALB is production env should be public"
+#   type        = bool
+#   default     = false
+# }
+
+/* -------------------------------------------------------------------------- */
+/*                                     DNS                                    */
+/* -------------------------------------------------------------------------- */
+variable "route53_hosted_zone_name" {
+  description = "The domain name in Route53 to fetch the hosted zone, i.e. example.com, mango-dev.blue.cloud"
+  type        = string
+}
+
+variable "is_enable_friendly_dns_for_alb_endpoint" {
+  description = "Disable DNS mapping with ALB when used with AWS CDN, to route traffic to CDN."
+  type        = bool
+  default     = true
+}
+
+# variable "fully_qualified_domain_name" {
+#   description = "The domain name for the ACM cert for attaching to the ALB i.e. *.example.com, www.amazing.com"
+#   type        = string
+# }
 /* -------------------------------------------------------------------------- */
 /*                                  IAM Role                                  */
 /* -------------------------------------------------------------------------- */
@@ -52,56 +107,11 @@ variable "additional_managed_policy_arns" {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                     ALB                                    */
-/* -------------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------- */
-/*                                     DNS                                    */
-/* -------------------------------------------------------------------------- */
-variable "route53_hosted_zone_name" {
-  description = "The domain name in Route53 to fetch the hosted zone, i.e. example.com, mango-dev.blue.cloud"
-  type        = string
-}
-
-variable "is_enable_friendly_dns_for_alb_endpoint" {
-  description = "Disable DNS mapping with ALB when used with AWS CDN, to route traffic to CDN."
-  type        = bool
-  default     = true
-}
-
-# variable "fully_qualified_domain_name" {
-#   description = "The domain name for the ACM cert for attaching to the ALB i.e. *.example.com, www.amazing.com"
-#   type        = string
-# }
-
-/* -------------------------------------------------------------------------- */
 /*                                   Nothing                                  */
 /* -------------------------------------------------------------------------- */
-# variable "public_subnet_ids" {
-#   description = "Public subnets for AWS Application Load Balancer deployment"
-#   type        = list(string)
-# }
-
-# variable "private_subnet_ids" {
-#   description = "Private subnets for container deployment"
-#   type        = list(string)
-# }
-
-# variable "alb_listener_port" {
-#   description = "The port to listen on the ALB for public services (80/443, default 443)"
-#   type        = number
-#   default     = 443
-# }
-
 # variable "certificate_arn" {
 #   description = "Certitificate ARN to link with ALB"
 #   type        = string
-# }
-
-# variable "public_alb" {
-#   description = "Flag for Internal/Public ALB. ALB is production env should be public"
-#   type        = bool
-#   default     = false
 # }
 
 # variable "alb_access_logs_bucket" {
