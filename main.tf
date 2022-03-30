@@ -1,20 +1,20 @@
 locals {
-  environment  = var.environment
   cluster_name = "${var.prefix}-${var.environment}-${var.name}"
 
   tags = merge(
     {
-      "Environment" = local.environment,
+      "Environment" = var.environment,
       "Terraform"   = "true"
     },
     var.tags
   )
 }
 
-resource "aws_ecs_cluster" "main" {
-  name = "${local.cluster_name}-cluster"
+resource "aws_ecs_cluster" "this" {
+  name = format("%s-cluster", local.cluster_name)
 
-  tags = merge({
-    Name = local.cluster_name
-  }, local.tags)
+  tags = merge(
+    local.tags,
+    { "Name" = format("%s-cluster", local.cluster_name) }
+  )
 }
