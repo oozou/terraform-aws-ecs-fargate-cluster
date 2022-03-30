@@ -3,6 +3,7 @@
 #   value       = var.public_alb == true ? aws_lb.main_public[0].dns_name : aws_lb.main_private[0].dns_name
 # }
 
+/* ------------------------------- ECS Cluster ------------------------------ */
 output "ecs_cluster_arn" {
   description = "ARN that identifies the cluster."
   value       = aws_ecs_cluster.this.arn
@@ -43,10 +44,12 @@ output "ecs_cluster_name" {
 #   value       = [aws_security_group.ecs_tasks.id]
 # }
 
-# # output "ecs_access_role_arn" {
-# #   description = ""
-# #   value = aws_iam_role.main.arn
-# # }
+/* ------------------------------ ECS IAM Role ------------------------------ */
+# Big uncomment this one
+output "ecs_access_role_arn" {
+  description = "Amazon Resource Name (ARN) specifying the role."
+  value       = element(concat(aws_iam_role.this[*].arn, [""]), 0)
+}
 
 # output "alb_dns_name" {
 #   description = ""
