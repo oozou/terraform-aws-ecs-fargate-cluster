@@ -39,10 +39,23 @@ variable "public_subnet_ids" {
 #   description = "Private subnets for container deployment"
 #   type        = list(string)
 # }
+
 /* -------------------------------------------------------------------------- */
-/*                                     ALB                                    */
+/*                               Security Group                               */
 /* -------------------------------------------------------------------------- */
-/* ----------------------------- Security Group ----------------------------- */
+/* -------------------------------- ECS Tasks ------------------------------- */
+variable "is_create_ecs_task_security_group" {
+  description = "Whether to create ECS tasks security group or not"
+  type        = bool
+  default     = true
+}
+variable "ecs_task_security_group_id" {
+  type        = string
+  description = "(Require) when is_create_alb_security_group is set to `false`"
+  default     = ""
+}
+
+/* ----------------------------------- ALB ---------------------------------- */
 variable "is_create_alb_security_group" {
   description = "Whether to create ALB security group or not"
   type        = bool
@@ -54,26 +67,28 @@ variable "alb_aws_security_group_id" {
   default     = ""
 }
 
-variable "alb_listener_port" {
-  description = "The port to listen on the ALB for public services (80/443, default 443)"
-  type        = number
-  default     = 443
-}
-
-/* ----------------------------------- ALB ---------------------------------- */
+/* -------------------------------------------------------------------------- */
+/*                                     ALB                                    */
+/* -------------------------------------------------------------------------- */
 # variable "is_public_alb" {
 #   description = "Flag for Internal/Public ALB. ALB is production env should be public"
 #   type        = bool
 #   default     = false
 # }
 
+variable "alb_listener_port" {
+  description = "The port to listen on the ALB for public services (80/443, default 443)"
+  type        = number
+  default     = 443
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
 /* -------------------------------------------------------------------------- */
-variable "route53_hosted_zone_name" {
-  description = "The domain name in Route53 to fetch the hosted zone, i.e. example.com, mango-dev.blue.cloud"
-  type        = string
-}
+# variable "route53_hosted_zone_name" {
+#   description = "The domain name in Route53 to fetch the hosted zone, i.e. example.com, mango-dev.blue.cloud"
+#   type        = string
+# }
 
 variable "is_enable_friendly_dns_for_alb_endpoint" {
   description = "Disable DNS mapping with ALB when used with AWS CDN, to route traffic to CDN."

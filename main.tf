@@ -4,7 +4,8 @@
 locals {
   cluster_name = "${var.prefix}-${var.environment}-${var.name}"
 
-  alb_aws_security_group_id = var.is_create_alb_security_group ? aws_security_group.alb[0].id : var.alb_aws_security_group_id
+  ecs_task_security_group_id = var.is_create_ecs_task_security_group ? aws_security_group.ecs_tasks[0].id : var.ecs_task_security_group_id
+  alb_aws_security_group_id  = var.is_create_alb_security_group ? aws_security_group.alb[0].id : var.alb_aws_security_group_id
 
   tags = merge(
     {
@@ -14,8 +15,9 @@ locals {
     var.tags
   )
 }
-/* ----------------------------- Raise exception ---------------------------- */
+/* ---------------------------- Assert condition ---------------------------- */
 locals {
+  assert_ecs_security_group_empty = var.is_create_ecs_task_security_group || (var.is_create_ecs_task_security_group == false && length(var.ecs_task_security_group_id) > 0) ? "pass" : file("Variable `ecs_task_security_group_id` is required when `is_create_ecs_task_security_group` is false")
   assert_alb_security_group_empty = var.is_create_alb_security_group || (var.is_create_alb_security_group == false && length(var.alb_aws_security_group_id) > 0) ? "pass" : file("Variable `alb_aws_security_group_id` is required when `is_create_alb_security_group` is false")
   assert_principle_empty          = var.is_create_role && length(var.allow_access_from_principals) > 0 ? "pass" : file("Variable `allow_access_from_principals` is required when `is_create_role` is true")
 }
@@ -31,10 +33,76 @@ resource "aws_ecs_cluster" "this" {
     { "Name" = format("%s-cluster", local.cluster_name) }
   )
 }
+
+/* -------------------------------------------------------------------------- */
+/*                             ECS Security Group                             */
+/* -------------------------------------------------------------------------- */
+resource "aws_security_group" "ecs_tasks" {
+  count = var.is_create_ecs_task_security_group ? 1 : 0
+
+  name        = format("%s-ecs-tasks-sg", local.cluster_name)
+  description = format("Security group for ECS task %s-ecs-tasks-sg", local.cluster_name)
+  vpc_id      = var.vpc_id
+
+  tags = merge(local.tags, { "Name" = format("%s-ecs-tasks-sg", local.cluster_name) })
+}
+
+resource "aws_security_group_rule" "tasks_to_tasks_tcp" {
+  count = var.is_create_ecs_task_security_group ? 1 : 0
+
+  security_group_id = local.ecs_task_security_group_id
+
+  source_security_group_id = local.ecs_task_security_group_id
+
+  type      = "ingress"
+  from_port = 0
+  to_port   = 65535
+  protocol  = "tcp"
+}
+
+resource "aws_security_group_rule" "tasks_to_tasks_udp" {
+  count = var.is_create_ecs_task_security_group ? 1 : 0
+
+  security_group_id = local.ecs_task_security_group_id
+
+  source_security_group_id = local.ecs_task_security_group_id
+
+  type      = "ingress"
+  from_port = 0
+  to_port   = 65535
+  protocol  = "udp"
+}
+
+resource "aws_security_group_rule" "tasks_to_world" {
+  count = var.is_create_ecs_task_security_group ? 1 : 0
+
+  security_group_id = local.ecs_task_security_group_id
+
+  type        = "egress"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+# We want all Fargate traffic to come from the ALB and within the subnet
+# We aren't locking down ports but that it must come from ALB
+# resource "aws_security_group_rule" "alb_to_tasks" {
+#   count = var.is_create_ecs_task_security_group ? 1 : 0
+
+#   security_group_id = local.ecs_task_security_group_id
+
+#   source_security_group_id = aws_security_group.alb.id
+
+#   type      = "ingress"
+#   from_port = 0
+#   to_port   = 65535
+#   protocol  = "tcp"
+# }
+
 /* -------------------------------------------------------------------------- */
 /*                             ALB Security Group                             */
 /* -------------------------------------------------------------------------- */
-# ALB Security group
 resource "aws_security_group" "alb" {
   count = var.is_create_alb_security_group ? 1 : 0
 
@@ -57,29 +125,30 @@ resource "aws_security_group_rule" "public_to_alb" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-# HTTP traffic is redirected to HTTPS
 resource "aws_security_group_rule" "public_to_alb_http" {
   count = var.is_create_alb_security_group ? 1 : 0
+
+  security_group_id = local.alb_aws_security_group_id
 
   type        = "ingress"
   from_port   = 80
   to_port     = 80
   protocol    = "tcp"
   cidr_blocks = ["0.0.0.0/0"]
-
-  security_group_id = local.alb_aws_security_group_id
 }
 
+# TODO check if ness when not create self alb sg
 # resource "aws_security_group_rule" "leaving_alb" {
 #   count = var.is_create_alb_security_group ? 1 : 0
+
+#   security_group_id        = local.alb_aws_security_group_id
+
+#   source_security_group_id = local.ecs_task_security_group_id
 
 #   type      = "egress"
 #   from_port = 0
 #   to_port   = 0
 #   protocol  = -1
-
-#   security_group_id        = local.alb_aws_security_group_id
-#   source_security_group_id = aws_security_group.ecs_tasks.id
 # }
 
 /* -------------------------------------------------------------------------- */
@@ -224,6 +293,7 @@ resource "aws_iam_role" "this" {
   tags = merge(local.tags, { "Name" : format("%s-ecs-access-role", local.cluster_name) })
 }
 
+# NOTE This not require uncommented
 # # events:ListTargetsByRule is required for ECS task to access subnet details from cloudwatch event rule.
 # # This would be required in Gitlab CICD
 # resource "aws_iam_role_policy" "main" {
