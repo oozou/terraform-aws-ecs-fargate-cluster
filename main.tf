@@ -17,10 +17,12 @@ locals {
 }
 /* ---------------------------- Assert condition ---------------------------- */
 locals {
-  assert_create_both_sg_group     = var.is_create_ecs_task_security_group == var.is_create_alb_security_group ? "pass" : file("is_create_ecs_task_security_group and is_create_alb_security_group must equal")
-  assert_ecs_security_group_empty = var.is_create_ecs_task_security_group || (var.is_create_ecs_task_security_group == false && length(var.ecs_task_security_group_id) > 0) ? "pass" : file("Variable `ecs_task_security_group_id` is required when `is_create_ecs_task_security_group` is false")
-  assert_alb_security_group_empty = var.is_create_alb_security_group || (var.is_create_alb_security_group == false && length(var.alb_aws_security_group_id) > 0) ? "pass" : file("Variable `alb_aws_security_group_id` is required when `is_create_alb_security_group` is false")
-  assert_principle_empty          = var.is_create_role && length(var.allow_access_from_principals) > 0 ? "pass" : file("Variable `allow_access_from_principals` is required when `is_create_role` is true")
+  assert_create_both_sg_group      = var.is_create_ecs_task_security_group == var.is_create_alb_security_group ? "pass" : file("is_create_ecs_task_security_group and is_create_alb_security_group must equal")
+  assert_ecs_security_group_empty  = var.is_create_ecs_task_security_group || (var.is_create_ecs_task_security_group == false && length(var.ecs_task_security_group_id) > 0) ? "pass" : file("Variable `ecs_task_security_group_id` is required when `is_create_ecs_task_security_group` is false")
+  assert_alb_security_group_empty  = var.is_create_alb_security_group || (var.is_create_alb_security_group == false && length(var.alb_aws_security_group_id) > 0) ? "pass" : file("Variable `alb_aws_security_group_id` is required when `is_create_alb_security_group` is false")
+  assert_public_subnet_ids_emptry  = !var.is_public_alb || length(var.public_subnet_ids) > 0 ? "pass" : file("Variable `public_subnet_ids` is required when `is_public_alb` is true")
+  assert_private_subnet_ids_emptry = var.is_public_alb || length(var.private_subnet_ids) > 0 ? "pass" : file("Variable `private_subnet_ids` is required when `is_public_alb` is false")
+  assert_principle_empty           = var.is_create_role && length(var.allow_access_from_principals) > 0 ? "pass" : file("Variable `allow_access_from_principals` is required when `is_create_role` is true")
 }
 
 /* -------------------------------------------------------------------------- */
@@ -156,47 +158,45 @@ resource "aws_security_group_rule" "leaving_alb" {
 /* -------------------------------------------------------------------------- */
 # Define the routing for the workloads
 # Application Load Balancer Creation (ALB) in the DMZ
-# resource "aws_lb" "main_public" {
-#   count = var.is_public_alb ? 1 : 0
+resource "aws_lb" "main_public" {
+  count = var.is_public_alb ? 1 : 0
 
-#   name                       = format("%s-alb", local.cluster_name)
-#   load_balancer_type         = "application"
-#   internal                   = false
-#   subnets                    = var.public_subnet_ids
-#   security_groups            = [aws_security_group.alb.id]
-#   drop_invalid_header_fields = true
-#   enable_deletion_protection = false
+  name                       = format("%s-alb", local.cluster_name)
+  load_balancer_type         = "application"
+  internal                   = false
+  subnets                    = var.public_subnet_ids
+  security_groups            = [local.alb_aws_security_group_id]
+  drop_invalid_header_fields = true
+  enable_deletion_protection = false
 
-#   # access_logs {
-#   #   bucket  = var.alb_access_logs_bucket
-#   #   prefix  = "${var.account_alias}/${var.cluster_name}-alb"
-#   #   enabled = true
-#   # }
+  # access_logs {
+  #   bucket  = var.alb_access_logs_bucket
+  #   prefix  = "${var.account_alias}/${var.cluster_name}-alb"
+  #   enabled = true
+  # }
 
-#   tags = merge(local.tags, { "Name" : format("%s-alb", local.cluster_name) })
-# }
+  tags = merge(local.tags, { "Name" : format("%s-alb", local.cluster_name) })
+}
 
-# resource "aws_lb" "main_private" {
-#   count = var.is_public_alb == false ? 1 : 0
+resource "aws_lb" "main_private" {
+  count = !var.is_public_alb ? 1 : 0
 
-#   name                       = "${local.cluster_name}-internal-alb"
-#   load_balancer_type         = "application"
-#   internal                   = true
-#   subnets                    = var.private_subnet_ids
-#   security_groups            = [aws_security_group.alb.id]
-#   drop_invalid_header_fields = true
-#   enable_deletion_protection = false
+  name                       = format("%s-internal-alb", local.cluster_name)
+  load_balancer_type         = "application"
+  internal                   = true
+  subnets                    = var.private_subnet_ids
+  security_groups            = [local.alb_aws_security_group_id]
+  drop_invalid_header_fields = true
+  enable_deletion_protection = false
 
-#   # access_logs {
-#   #   bucket  = var.alb_access_logs_bucket
-#   #   prefix  = "${var.account_alias}/${var.cluster_name}-alb-internal"
-#   #   enabled = true
-#   # }
+  # access_logs {
+  #   bucket  = var.alb_access_logs_bucket
+  #   prefix  = "${var.account_alias}/${var.cluster_name}-alb-internal"
+  #   enabled = true
+  # }
 
-#   tags = merge({
-#     Name = "${local.cluster_name}-alb-internal"
-#   }, local.tags)
-# }
+  tags = merge(local.tags, { "Name" = format("%s-internal-alb", local.cluster_name) })
+}
 
 # resource "aws_lb_listener" "http" {
 #   load_balancer_arn = var.is_public_alb == false ? aws_lb.main_private[0].id : aws_lb.main_public[0].id
@@ -247,6 +247,7 @@ resource "aws_service_discovery_private_dns_namespace" "internal" {
   tags = merge(local.tags, { "Name" : format("%s.internal", local.cluster_name) })
 }
 
+# TODO Ask ms about new zone model *(maxim) will not use route53***********
 # /* --------------------------------- Route53 -------------------------------- */
 # For both internal and external use public hosted zone
 # data "aws_route53_zone" "this" {

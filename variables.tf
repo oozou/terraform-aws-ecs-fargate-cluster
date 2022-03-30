@@ -33,12 +33,14 @@ variable "vpc_id" {
 variable "public_subnet_ids" {
   description = "Public subnets for AWS Application Load Balancer deployment"
   type        = list(string)
+  default     = []
 }
 
-# variable "private_subnet_ids" {
-#   description = "Private subnets for container deployment"
-#   type        = list(string)
-# }
+variable "private_subnet_ids" {
+  description = "Private subnets for container deployment"
+  type        = list(string)
+  default     = []
+}
 
 /* -------------------------------------------------------------------------- */
 /*                               Security Group                               */
@@ -70,11 +72,11 @@ variable "alb_aws_security_group_id" {
 /* -------------------------------------------------------------------------- */
 /*                                     ALB                                    */
 /* -------------------------------------------------------------------------- */
-# variable "is_public_alb" {
-#   description = "Flag for Internal/Public ALB. ALB is production env should be public"
-#   type        = bool
-#   default     = false
-# }
+variable "is_public_alb" {
+  description = "Flag for Internal/Public ALB. ALB is production env should be public"
+  type        = bool
+  default     = false
+}
 
 variable "alb_listener_port" {
   description = "The port to listen on the ALB for public services (80/443, default 443)"
