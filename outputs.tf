@@ -1,8 +1,3 @@
-# output "alb_hostname" {
-#   description = ""
-#   value       = var.public_alb == true ? aws_lb.main_public[0].dns_name : aws_lb.main_private[0].dns_name
-# }
-
 /* ------------------------------- ECS Cluster ------------------------------ */
 output "ecs_cluster_arn" {
   description = "ARN that identifies the cluster."
@@ -18,10 +13,25 @@ output "ecs_cluster_name" {
   description = "Name of the cluster"
   value       = aws_ecs_cluster.this.name
 }
+/* -------------------------------- IAM Role -------------------------------- */
+output "ecs_access_role_arn" {
+  description = "Amazon Resource Name (ARN) specifying the role."
+  value       = element(concat(aws_iam_role.this[*].arn, [""]), 0)
+}
+/* ----------------------------------- DNS ---------------------------------- */
+output "service_discovery_namespace" {
+  description = "The ID of a namespace."
+  value       = aws_service_discovery_private_dns_namespace.internal.id
+}
 
-# output "service_discovery_namespace" {
+
+
+
+
+
+# output "alb_hostname" {
 #   description = ""
-#   value       = aws_service_discovery_private_dns_namespace.internal.id
+#   value       = var.public_alb == true ? aws_lb.main_public[0].dns_name : aws_lb.main_private[0].dns_name
 # }
 
 # output "alb_arn" {
@@ -43,13 +53,6 @@ output "ecs_cluster_name" {
 #   description = ""
 #   value       = [aws_security_group.ecs_tasks.id]
 # }
-
-/* ------------------------------ ECS IAM Role ------------------------------ */
-# Big uncomment this one
-output "ecs_access_role_arn" {
-  description = "Amazon Resource Name (ARN) specifying the role."
-  value       = element(concat(aws_iam_role.this[*].arn, [""]), 0)
-}
 
 # output "alb_dns_name" {
 #   description = ""

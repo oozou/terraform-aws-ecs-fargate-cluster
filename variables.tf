@@ -23,6 +23,14 @@ variable "tags" {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                                     VPC                                    */
+/* -------------------------------------------------------------------------- */
+variable "vpc_id" {
+  description = "VPC to deploy the cluster in"
+  type        = string
+}
+
+/* -------------------------------------------------------------------------- */
 /*                                  IAM Role                                  */
 /* -------------------------------------------------------------------------- */
 variable "is_create_role" {
@@ -44,13 +52,31 @@ variable "additional_managed_policy_arns" {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                 ECS Cluster                                */
+/*                                     ALB                                    */
 /* -------------------------------------------------------------------------- */
-# variable "vpc_id" {
-#   description = "VPC to deploy the cluster in"
+
+/* -------------------------------------------------------------------------- */
+/*                                     DNS                                    */
+/* -------------------------------------------------------------------------- */
+variable "route53_hosted_zone_name" {
+  description = "The domain name in Route53 to fetch the hosted zone, i.e. example.com, mango-dev.blue.cloud"
+  type        = string
+}
+
+variable "is_enable_friendly_dns_for_alb_endpoint" {
+  description = "Disable DNS mapping with ALB when used with AWS CDN, to route traffic to CDN."
+  type        = bool
+  default     = true
+}
+
+# variable "fully_qualified_domain_name" {
+#   description = "The domain name for the ACM cert for attaching to the ALB i.e. *.example.com, www.amazing.com"
 #   type        = string
 # }
 
+/* -------------------------------------------------------------------------- */
+/*                                   Nothing                                  */
+/* -------------------------------------------------------------------------- */
 # variable "public_subnet_ids" {
 #   description = "Public subnets for AWS Application Load Balancer deployment"
 #   type        = list(string)
@@ -72,26 +98,10 @@ variable "additional_managed_policy_arns" {
 #   type        = string
 # }
 
-# variable "enable_friendly_dns_for_alb_endpoint" {
-#   description = "Disable DNS mapping with ALB when used with AWS CDN, to route traffic to CDN."
-#   type        = bool
-#   default     = true
-# }
-
 # variable "public_alb" {
 #   description = "Flag for Internal/Public ALB. ALB is production env should be public"
 #   type        = bool
 #   default     = false
-# }
-
-# variable "route53_hosted_zone_name" {
-#   description = "The domain name in Route53 to fetch the hosted zone, i.e. example.com, mango-dev.blue.cloud"
-#   type        = string
-# }
-
-# variable "fully_qualified_domain_name" {
-#   description = "The domain name for the ACM cert for attaching to the ALB i.e. *.example.com, www.amazing.com"
-#   type        = string
 # }
 
 # variable "alb_access_logs_bucket" {
