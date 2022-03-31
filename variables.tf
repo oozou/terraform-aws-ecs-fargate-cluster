@@ -116,12 +116,6 @@ variable "route53_hosted_zone_name" {
   default     = ""
 }
 
-variable "is_enable_friendly_dns_for_alb_endpoint" {
-  description = "Disable DNS mapping with ALB when used with AWS CDN, to route traffic to CDN."
-  type        = bool
-  default     = true
-}
-
 variable "fully_qualified_domain_name" {
   description = "The domain name for the ACM cert for attaching to the ALB i.e. *.example.com, www.amazing.com"
   type        = string

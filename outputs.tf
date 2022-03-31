@@ -24,30 +24,25 @@ output "ecs_access_role_arn" {
   value       = element(concat(aws_iam_role.this[*].arn, [""]), 0)
 }
 /* ----------------------------------- ALB ---------------------------------- */
-# output "alb_hostname" {
-#   description = ""
-#   value       = var.is_public_alb == true ? aws_lb.main_public[0].dns_name : aws_lb.main_private[0].dns_name
-# }
+output "alb_arn" {
+  description = "ARN of alb"
+  value       = var.is_public_alb ? try(aws_lb.main_public[0].arn, "") : try(aws_lb.main_private[0].arn, "")
+}
 
-# output "alb_arn" {
-#   description = ""
-#   value       = var.is_public_alb == true ? aws_lb.main_public[0].arn : aws_lb.main_private[0].arn
-# }
+output "alb_listener_http_arn" {
+  description = "ARN of the listener (matches id)."
+  value       = try(aws_lb_listener.http[0].arn, "")
+}
 
-# output "alb_listener_http_arn" {
-#   description = ""
-#   value       = aws_lb_listener.http.arn
-# }
+output "alb_listener_https_redirect_arn" {
+  description = "ARN of the listener (matches id)."
+  value       = try(aws_lb_listener.front_end_https_http_redirect[0].arn, "")
+}
 
-# # output "alb_listener_https_redirect_arn" {
-# #   description = ""
-# #   value = aws_lb_listener.front_end_https_http_redirect.arn
-# # }
-
-# output "alb_dns_name" {
-#   description = ""
-#   value       = var.is_public_alb == true ? aws_lb.main_public[0].dns_name : aws_lb.main_private[0].dns_name
-# }
+output "alb_dns_name" {
+  description = "The DNS name of the load balancer."
+  value       = try(local.alb_dns_name, "")
+}
 
 /* ----------------------------------- DNS ---------------------------------- */
 output "service_discovery_namespace" {
