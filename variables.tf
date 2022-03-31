@@ -72,8 +72,20 @@ variable "alb_aws_security_group_id" {
 /* -------------------------------------------------------------------------- */
 /*                                     ALB                                    */
 /* -------------------------------------------------------------------------- */
+variable "is_create_alb" {
+  description = "Whether to create alb or not"
+  type        = bool
+  default     = true
+}
+
 variable "is_public_alb" {
   description = "Flag for Internal/Public ALB. ALB is production env should be public"
+  type        = bool
+  default     = false
+}
+
+variable "is_ignore_unsecured_connection" {
+  description = "Whether to by pass the HTTPs endpoints required or not"
   type        = bool
   default     = false
 }
@@ -84,6 +96,11 @@ variable "alb_listener_port" {
   default     = 443
 }
 
+variable "alb_certificate_arn" {
+  description = "Certitificate ARN to link with ALB"
+  type        = string
+  default     = ""
+}
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
 /* -------------------------------------------------------------------------- */
@@ -126,11 +143,6 @@ variable "additional_managed_policy_arns" {
 /* -------------------------------------------------------------------------- */
 /*                                   Nothing                                  */
 /* -------------------------------------------------------------------------- */
-# variable "certificate_arn" {
-#   description = "Certitificate ARN to link with ALB"
-#   type        = string
-# }
-
 # variable "alb_access_logs_bucket" {
 #   description = "AWS ALB Access Logs Bucket"
 #   type        = string

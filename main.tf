@@ -7,6 +7,8 @@ locals {
   ecs_task_security_group_id = var.is_create_ecs_task_security_group ? aws_security_group.ecs_tasks[0].id : var.ecs_task_security_group_id
   alb_aws_security_group_id  = var.is_create_alb_security_group ? aws_security_group.alb[0].id : var.alb_aws_security_group_id
 
+  alb_id = var.is_create_alb ? var.is_public_alb ? aws_lb.main_public[0].id : aws_lb.main_private[0].id : null
+
   tags = merge(
     {
       "Environment" = var.environment,
@@ -20,8 +22,10 @@ locals {
   assert_create_both_sg_group      = var.is_create_ecs_task_security_group == var.is_create_alb_security_group ? "pass" : file("is_create_ecs_task_security_group and is_create_alb_security_group must equal")
   assert_ecs_security_group_empty  = var.is_create_ecs_task_security_group || (var.is_create_ecs_task_security_group == false && length(var.ecs_task_security_group_id) > 0) ? "pass" : file("Variable `ecs_task_security_group_id` is required when `is_create_ecs_task_security_group` is false")
   assert_alb_security_group_empty  = var.is_create_alb_security_group || (var.is_create_alb_security_group == false && length(var.alb_aws_security_group_id) > 0) ? "pass" : file("Variable `alb_aws_security_group_id` is required when `is_create_alb_security_group` is false")
-  assert_public_subnet_ids_emptry  = !var.is_public_alb || length(var.public_subnet_ids) > 0 ? "pass" : file("Variable `public_subnet_ids` is required when `is_public_alb` is true")
-  assert_private_subnet_ids_emptry = var.is_public_alb || length(var.private_subnet_ids) > 0 ? "pass" : file("Variable `private_subnet_ids` is required when `is_public_alb` is false")
+  assert_public_subnet_ids_empty   = !var.is_public_alb || length(var.public_subnet_ids) > 0 ? "pass" : file("Variable `public_subnet_ids` is required when `is_public_alb` is true")
+  assert_private_subnet_ids_empty  = var.is_public_alb || length(var.private_subnet_ids) > 0 ? "pass" : file("Variable `private_subnet_ids` is required when `is_public_alb` is false")
+  assert_http_security             = var.is_ignore_unsecured_connection || (var.is_public_alb && var.alb_listener_port == 443) ? "pass" : file("This will expose the alb as public on port http 80")
+  assert_alb_certificate_arn_empty = !var.is_public_alb || var.alb_listener_port == 80 || (var.is_create_alb && length(var.alb_certificate_arn) > 0) ? "pass" : file("Variable `alb_certificate_arn` is required when `is_create_alb` is true and `alb_listener_port` == 443")
   assert_principle_empty           = var.is_create_role && length(var.allow_access_from_principals) > 0 ? "pass" : file("Variable `allow_access_from_principals` is required when `is_create_role` is true")
 }
 
@@ -117,7 +121,7 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_security_group_rule" "public_to_alb" {
-  count = var.is_create_alb_security_group ? 1 : 0
+  count = var.is_create_alb_security_group && var.alb_listener_port == 443 ? 1 : 0
 
   security_group_id = local.alb_aws_security_group_id
 
@@ -159,7 +163,7 @@ resource "aws_security_group_rule" "leaving_alb" {
 # Define the routing for the workloads
 # Application Load Balancer Creation (ALB) in the DMZ
 resource "aws_lb" "main_public" {
-  count = var.is_public_alb ? 1 : 0
+  count = var.is_public_alb && var.is_create_alb ? 1 : 0
 
   name                       = format("%s-alb", local.cluster_name)
   load_balancer_type         = "application"
@@ -179,7 +183,7 @@ resource "aws_lb" "main_public" {
 }
 
 resource "aws_lb" "main_private" {
-  count = !var.is_public_alb ? 1 : 0
+  count = !var.is_public_alb && var.is_create_alb ? 1 : 0
 
   name                       = format("%s-internal-alb", local.cluster_name)
   load_balancer_type         = "application"
@@ -198,41 +202,50 @@ resource "aws_lb" "main_private" {
   tags = merge(local.tags, { "Name" = format("%s-internal-alb", local.cluster_name) })
 }
 
-# resource "aws_lb_listener" "http" {
-#   load_balancer_arn = var.is_public_alb == false ? aws_lb.main_private[0].id : aws_lb.main_public[0].id
+resource "aws_lb_listener" "http" {
+  count = var.is_create_alb ? 1 : 0
 
-#   port            = var.alb_listener_port
-#   protocol        = var.alb_listener_port == 443 ? "HTTPS" : "HTTP"
-#   certificate_arn = var.alb_listener_port == 443 ? var.certificate_arn : ""
-#   ssl_policy      = var.alb_listener_port == 443 ? "ELBSecurityPolicy-FS-1-2-Res-2019-08" : ""
+  load_balancer_arn = local.alb_id
 
-#   default_action {
-#     type = "fixed-response"
+  port            = var.alb_listener_port
+  protocol        = var.alb_listener_port == 443 ? "HTTPS" : "HTTP"
+  certificate_arn = var.alb_listener_port == 443 ? var.alb_certificate_arn : ""
+  ssl_policy      = var.alb_listener_port == 443 ? "ELBSecurityPolicy-FS-1-2-Res-2019-08" : ""
 
-#     fixed_response {
-#       content_type = "text/plain"
-#       message_body = "No service found"
-#       status_code  = "503"
-#     }
-#   }
-# }
+  default_action {
+    type = "fixed-response"
 
-# resource "aws_lb_listener" "front_end_https_http_redirect" {
-#   load_balancer_arn = var.is_public_alb == false ? aws_lb.main_private[0].id : aws_lb.main_public[0].id
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "No service found"
+      status_code  = "503"
+    }
+  }
+}
 
-#   port     = "80"
-#   protocol = "HTTP"
+resource "aws_lb_listener" "front_end_https_http_redirect" {
+  # If not var.alb_listener_port == 443, the listener rule will overlap and raise error
+  count = var.is_create_alb && var.alb_listener_port == 443 ? 1 : 0
 
-#   default_action {
-#     type = "redirect"
+  depends_on = [
+    aws_lb_listener.http
+  ]
 
-#     redirect {
-#       port        = "443"
-#       protocol    = "HTTPS"
-#       status_code = "HTTP_301"
-#     }
-#   }
-# }
+  load_balancer_arn = local.alb_id
+
+  port     = "80"
+  protocol = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
