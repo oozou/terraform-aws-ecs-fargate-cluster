@@ -26,7 +26,7 @@ output "ecs_access_role_arn" {
 /* ----------------------------------- ALB ---------------------------------- */
 output "alb_arn" {
   description = "ARN of alb"
-  value       = var.is_public_alb ? try(aws_lb.main_public[0].arn, "") : try(aws_lb.main_private[0].arn, "")
+  value       = try(aws_lb.this[0].arn, "")
 }
 
 output "alb_listener_http_arn" {
@@ -41,7 +41,7 @@ output "alb_listener_https_redirect_arn" {
 
 output "alb_dns_name" {
   description = "The DNS name of the load balancer."
-  value       = try(local.alb_dns_name, "")
+  value       = try(aws_lb.this[0].dns_name, "")
 }
 
 /* ----------------------------------- DNS ---------------------------------- */
