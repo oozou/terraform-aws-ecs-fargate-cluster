@@ -7,7 +7,9 @@ locals {
   ecs_task_security_group_id = var.is_create_ecs_task_security_group ? aws_security_group.ecs_tasks[0].id : var.ecs_task_security_group_id
   alb_aws_security_group_id  = var.is_create_alb_security_group ? aws_security_group.alb[0].id : var.alb_aws_security_group_id
 
-  alb_id = var.is_create_alb ? var.is_public_alb ? aws_lb.main_public[0].id : aws_lb.main_private[0].id : null
+  alb_id       = var.is_create_alb ? var.is_public_alb ? aws_lb.main_public[0].id : aws_lb.main_private[0].id : null
+  alb_zone_id  = var.is_create_alb ? var.is_public_alb ? aws_lb.main_public[0].zone_id : aws_lb.main_private[0].zone_id : null
+  alb_dns_name = var.is_create_alb ? var.is_public_alb ? lower(aws_lb.main_public[0].dns_name) : lower(aws_lb.main_private[0].dns_name) : null
 
   tags = merge(
     {
@@ -260,26 +262,33 @@ resource "aws_service_discovery_private_dns_namespace" "internal" {
   tags = merge(local.tags, { "Name" : format("%s.internal", local.cluster_name) })
 }
 
-# TODO Ask ms about new zone model *(maxim) will not use route53***********
 # /* --------------------------------- Route53 -------------------------------- */
-# For both internal and external use public hosted zone
-# data "aws_route53_zone" "this" {
-#   name         = var.route53_hosted_zone_name
-#   private_zone = false
-# }
-# resource "aws_route53_record" "application" {
-#   count = var.is_enable_friendly_dns_for_alb_endpoint ? 1 : 0
+module "application_record" {
+  source = "git::ssh://git@github.com/oozou/terraform-aws-route53.git?ref=v1.0.0"
 
-#   zone_id = data.aws_route53_zone.this.id
-#   name    = var.fully_qualified_domain_name
-#   type    = "A"
+  count = var.is_enable_friendly_dns_for_alb_endpoint && var.is_create_alb && var.is_create_alb_dns_record ? 1 : 0
 
-#   alias {
-#     name                   = var.is_public_alb ? lower(aws_lb.main_public[0].dns_name) : lower(aws_lb.main_private[0].dns_name)
-#     zone_id                = var.is_public_alb ? aws_lb.main_public[0].zone_id : aws_lb.main_private[0].zone_id
-#     evaluate_target_health = true
-#   }
-# }
+  is_create_zone = false
+  is_public_zone = true # Default `true`
+
+  prefix      = var.prefix
+  environment = var.environment
+
+  dns_name = var.route53_hosted_zone_name
+
+  dns_records = {
+    application_record = {
+      name = replace(var.fully_qualified_domain_name, ".${var.route53_hosted_zone_name}", "") # Auto append with dns_name
+      type = "A"
+
+      alias = {
+        name                   = local.alb_dns_name # Target DNS name
+        zone_id                = local.alb_zone_id
+        evaluate_target_health = true
+      }
+    }
+  }
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                  IAM Role                                  */

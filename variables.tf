@@ -104,10 +104,17 @@ variable "alb_certificate_arn" {
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
 /* -------------------------------------------------------------------------- */
-# variable "route53_hosted_zone_name" {
-#   description = "The domain name in Route53 to fetch the hosted zone, i.e. example.com, mango-dev.blue.cloud"
-#   type        = string
-# }
+variable "is_create_alb_dns_record" {
+  description = "Whether to create ALB dns record or not"
+  type        = bool
+  default     = true
+}
+
+variable "route53_hosted_zone_name" {
+  description = "The domain name in Route53 to fetch the hosted zone, i.e. example.com, mango-dev.blue.cloud"
+  type        = string
+  default     = ""
+}
 
 variable "is_enable_friendly_dns_for_alb_endpoint" {
   description = "Disable DNS mapping with ALB when used with AWS CDN, to route traffic to CDN."
@@ -115,10 +122,11 @@ variable "is_enable_friendly_dns_for_alb_endpoint" {
   default     = true
 }
 
-# variable "fully_qualified_domain_name" {
-#   description = "The domain name for the ACM cert for attaching to the ALB i.e. *.example.com, www.amazing.com"
-#   type        = string
-# }
+variable "fully_qualified_domain_name" {
+  description = "The domain name for the ACM cert for attaching to the ALB i.e. *.example.com, www.amazing.com"
+  type        = string
+  default     = ""
+}
 /* -------------------------------------------------------------------------- */
 /*                                  IAM Role                                  */
 /* -------------------------------------------------------------------------- */
