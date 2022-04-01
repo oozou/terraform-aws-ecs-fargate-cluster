@@ -23,8 +23,8 @@ module "this" {
   # Security Group
   is_create_alb_security_group      = true # Default is `true`
   is_create_ecs_task_security_group = true # Default is `true`
-  alb_aws_security_group_id         = "sg-0bc8663a09cbf0086"
-  ecs_task_security_group_id        = "sg-0bc8663a09cbf0086"
+  alb_aws_security_group_id         = "sg-0bc8663a09cbf0086" # Required when is_create_alb_security_group is `false`
+  ecs_task_security_group_id        = "sg-0bc8663a09cbf0086" # Required when is_create_ecs_task_security_group is `false`
 
   # ALB
   is_create_alb       = true # Default is `true`
