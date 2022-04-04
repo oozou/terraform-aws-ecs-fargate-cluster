@@ -7,10 +7,6 @@ locals {
   ecs_task_security_group_id = var.is_create_ecs_task_security_group ? aws_security_group.ecs_tasks[0].id : var.ecs_task_security_group_id
   alb_aws_security_group_id  = var.is_create_alb_security_group ? aws_security_group.alb[0].id : var.alb_aws_security_group_id
 
-  # alb_id       = var.is_create_alb ? var.is_public_alb ? aws_lb.main_public[0].id : aws_lb.main_private[0].id : null
-  # alb_zone_id  = var.is_create_alb ? var.is_public_alb ? aws_lb.main_public[0].zone_id : aws_lb.main_private[0].zone_id : null
-  # alb_dns_name = var.is_create_alb ? var.is_public_alb ? lower(aws_lb.main_public[0].dns_name) : lower(aws_lb.main_private[0].dns_name) : null
-
   tags = merge(
     {
       "Environment" = var.environment,
