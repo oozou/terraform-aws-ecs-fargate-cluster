@@ -101,6 +101,12 @@ variable "alb_certificate_arn" {
   type        = string
   default     = ""
 }
+
+variable "enable_deletion_protection" {
+  description = "(Optional) If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false."
+  type        = bool
+  default     = false
+}
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
 /* -------------------------------------------------------------------------- */
@@ -141,16 +147,3 @@ variable "additional_managed_policy_arns" {
   type        = list(string)
   default     = []
 }
-
-/* -------------------------------------------------------------------------- */
-/*                                   Nothing                                  */
-/* -------------------------------------------------------------------------- */
-# variable "alb_access_logs_bucket" {
-#   description = "AWS ALB Access Logs Bucket"
-#   type        = string
-# }
-
-# variable "account_alias" {
-#   description = "Alias of the AWS account where this service is created. Eg. alpha/beta/prod. This would be used create s3 bucket path in the logging account"
-#   type        = string
-# }

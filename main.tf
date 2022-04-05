@@ -54,7 +54,7 @@ resource "aws_security_group" "ecs_tasks" {
   tags = merge(local.tags, { "Name" = format("%s-ecs-tasks-sg", local.cluster_name) })
 }
 
-resource "aws_security_group_rule" "tasks_to_tasks_tcp" {
+resource "aws_security_group_rule" "tasks_to_tasks_all" {
   count = var.is_create_ecs_task_security_group ? 1 : 0
 
   security_group_id = local.ecs_task_security_group_id
@@ -64,20 +64,7 @@ resource "aws_security_group_rule" "tasks_to_tasks_tcp" {
   type      = "ingress"
   from_port = 0
   to_port   = 65535
-  protocol  = "tcp"
-}
-
-resource "aws_security_group_rule" "tasks_to_tasks_udp" {
-  count = var.is_create_ecs_task_security_group ? 1 : 0
-
-  security_group_id = local.ecs_task_security_group_id
-
-  source_security_group_id = local.ecs_task_security_group_id
-
-  type      = "ingress"
-  from_port = 0
-  to_port   = 65535
-  protocol  = "udp"
+  protocol  = "-1"
 }
 
 resource "aws_security_group_rule" "tasks_to_world" {
@@ -171,7 +158,7 @@ resource "aws_lb" "this" {
   subnets                    = var.is_public_alb ? var.public_subnet_ids : var.private_subnet_ids
   security_groups            = [local.alb_aws_security_group_id]
   drop_invalid_header_fields = true
-  enable_deletion_protection = false
+  enable_deletion_protection = var.enable_deletion_protection
 
   # access_logs {
   #   bucket  = var.alb_access_logs_bucket
