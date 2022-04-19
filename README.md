@@ -4,17 +4,17 @@ Terraform module with create ECS Cluster resources on AWS.
 
 ```terraform
 module "this" {
-  source = "git::ssh://git@github.com/oozou/terraform-aws-ecs-fargate-cluster.git?ref=<branch_or_version>"
+  source = "git::ssh://git@github.com/company/terraform-aws-ecs-fargate-cluster.git?ref=<branch_or_version>"
 
   # Generics
-  prefix      = "sbth"
+  prefix      = "customer"
   environment = "test"
   name        = "demo"
 
   # IAM Role
   ## If is_create_role is `false`, all of folowing argument is ignored
   is_create_role                 = true # Default is `true`
-  allow_access_from_principals   = ["arn:aws:iam::011275294601:root"]
+  allow_access_from_principals   = ["arn:aws:iam::xxxxxxxxxxxxxx:root"]
   additional_managed_policy_arns = [] # Default is `[]`
 
   # VPC Information
@@ -65,7 +65,7 @@ module "this" {
 
 | Name                                                                                         | Source                                                    | Version |
 |----------------------------------------------------------------------------------------------|-----------------------------------------------------------|---------|
-| <a name="module_application_record"></a> [application\_record](#module\_application\_record) | git::ssh://git@github.com/oozou/terraform-aws-route53.git | v1.0.0  |
+| <a name="module_application_record"></a> [application\_record](#module\_application\_record) | git::ssh://git@github.com/company/terraform-aws-route53.git | v1.0.0  |
 
 ## Resources
 
