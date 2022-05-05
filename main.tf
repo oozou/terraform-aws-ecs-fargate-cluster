@@ -26,7 +26,7 @@ locals {
   assert_http_security             = var.is_ignore_unsecured_connection || !var.is_public_alb || (var.is_public_alb && var.alb_listener_port == 443) ? "pass" : file("This will expose the alb as public on port http 80")
   assert_alb_certificate_arn_empty = var.is_create_alb == false || var.alb_listener_port == 80 || (var.is_create_alb && length(var.alb_certificate_arn) > 0) ? "pass" : file("Variable `alb_certificate_arn` is required when `is_create_alb` is true and `alb_listener_port` == 443")
   raise_is_principle_empty         = var.is_create_role && length(var.allow_access_from_principals) == 0 ? file("Variable `allow_access_from_principals` is required when `is_create_role` is true") : "pass"
-  assert_hosted_zone_empty         = var.is_create_alb == false || var.is_create_alb_dns_record == false || length(var.route53_hosted_zone_name) > 0 ? "pass" : file("`route53_hosted_zone_name` is required to create alb alias record")
+  raise_is_hoste_zone_empty        = var.is_create_alb && var.is_create_alb_dns_record && length(var.route53_hosted_zone_name) == 0 ? file("`route53_hosted_zone_name` is required to create alb alias record") : "pass"
   assert_alb_domain_name_empty     = var.is_create_alb == false || var.is_create_alb_dns_record == false || length(var.fully_qualified_domain_name) > 0 ? "pass" : file("`fully_qualified_domain_name` is required to create alb alias record")
 }
 
