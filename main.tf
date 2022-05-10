@@ -15,8 +15,7 @@ locals {
     var.tags
   )
 }
-# TODO move all to rasi exception
-/* ---------------------------- Assert condition ---------------------------- */
+/* ----------------------------- Raise Condition ---------------------------- */
 locals {
   raise_is_create_both_sg_group      = var.is_create_ecs_task_security_group != var.is_create_alb_security_group ? file("is_create_ecs_task_security_group and is_create_alb_security_group must equal") : "pass"
   raise_is_ecs_security_group_empty  = var.is_create_ecs_task_security_group == false && length(var.ecs_task_security_group_id) == 0 ? file("Variable `ecs_task_security_group_id` is required when `is_create_ecs_task_security_group` is false") : "pass"
