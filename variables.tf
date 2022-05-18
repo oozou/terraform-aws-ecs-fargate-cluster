@@ -23,6 +23,15 @@ variable "tags" {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                               SEcurity Group                               */
+/* -------------------------------------------------------------------------- */
+variable "additional_security_group_ingress_rules" {
+  description = "Map of ingress and any specific/overriding attributes to be created"
+  type        = any
+  default     = {}
+}
+
+/* -------------------------------------------------------------------------- */
 /*                                     VPC                                    */
 /* -------------------------------------------------------------------------- */
 variable "vpc_id" {
