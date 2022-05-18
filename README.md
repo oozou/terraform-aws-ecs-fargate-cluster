@@ -25,6 +25,13 @@ module "this" {
   is_create_ecs_task_security_group = true # Default is `true`
   alb_aws_security_group_id         = "sg-0bc8663a09cbf0086" # Required when is_create_alb_security_group is `false`
   ecs_task_security_group_id        = "sg-0bc8663a09cbf0086" # Required when is_create_ecs_task_security_group is `false`
+  additional_security_group_ingress_rules = {
+    allow_from_ec2_vpn_sg = {
+      source_security_group_id = "sg-069c60801077199a7",
+      protocol                 = "all",
+      port                     = -1
+    }
+  }
 
   # ALB
   is_create_alb       = true # Default is `true`
@@ -63,8 +70,8 @@ module "this" {
 
 ## Modules
 
-| Name                                                                                         | Source                                                    | Version |
-|----------------------------------------------------------------------------------------------|-----------------------------------------------------------|---------|
+| Name                                                                                         | Source                                                      | Version |
+|----------------------------------------------------------------------------------------------|-------------------------------------------------------------|---------|
 | <a name="module_application_record"></a> [application\_record](#module\_application\_record) | git::ssh://git@github.com/company/terraform-aws-route53.git | v1.0.0  |
 
 ## Resources
