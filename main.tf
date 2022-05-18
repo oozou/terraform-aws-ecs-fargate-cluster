@@ -60,7 +60,7 @@ resource "aws_security_group_rule" "ecs_tasks_ingress" {
   type              = "ingress"
   from_port         = lookup(each.value, "from_port", lookup(each.value, "port", null))
   to_port           = lookup(each.value, "to_port", lookup(each.value, "port", null))
-  protocol          = lookup(each.value, "protocol", "tcp")
+  protocol          = lookup(each.value, "protocol", null)
   security_group_id = local.ecs_task_security_group_id
 
   cidr_blocks              = lookup(each.value, "cidr_blocks", null)
