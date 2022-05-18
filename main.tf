@@ -54,6 +54,22 @@ resource "aws_security_group" "ecs_tasks" {
   tags = merge(local.tags, { "Name" = format("%s-ecs-tasks-sg", local.cluster_name) })
 }
 
+resource "aws_security_group_rule" "ecs_tasks_ingress" {
+  for_each = var.additional_security_group_ingress_rules
+
+  type              = "ingress"
+  from_port         = lookup(each.value, "from_port", lookup(each.value, "port", null))
+  to_port           = lookup(each.value, "to_port", lookup(each.value, "port", null))
+  protocol          = lookup(each.value, "protocol", null)
+  security_group_id = local.ecs_task_security_group_id
+
+  cidr_blocks              = lookup(each.value, "cidr_blocks", null)
+  description              = lookup(each.value, "description", null)
+  ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
+  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
+  source_security_group_id = lookup(each.value, "source_security_group_id", null)
+}
+
 resource "aws_security_group_rule" "tasks_to_tasks_all" {
   count = var.is_create_ecs_task_security_group ? 1 : 0
 
