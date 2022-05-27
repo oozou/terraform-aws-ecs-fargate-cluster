@@ -35,6 +35,14 @@ locals {
 resource "aws_ecs_cluster" "this" {
   name = format("%s-cluster", local.cluster_name)
 
+  dynamic "setting" {
+    for_each = var.is_enable_container_insights ? [true] : []
+    content {
+      name  = "containerInsights"
+      value = "enabled"
+    }
+  }
+
   tags = merge(
     local.tags,
     { "Name" = format("%s-cluster", local.cluster_name) }

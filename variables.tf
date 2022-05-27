@@ -23,7 +23,16 @@ variable "tags" {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               SEcurity Group                               */
+/*                                 ECS Cluster                                */
+/* -------------------------------------------------------------------------- */
+variable "is_enable_container_insights" {
+  description = "Whether to be used to enable CloudWatch Container Insights for a cluster."
+  type        = bool
+  default     = true
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Security Group                               */
 /* -------------------------------------------------------------------------- */
 variable "additional_security_group_ingress_rules" {
   description = "Map of ingress and any specific/overriding attributes to be created"
