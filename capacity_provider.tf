@@ -18,7 +18,6 @@ resource "aws_ecs_cluster_capacity_providers" "this" {
   count = local.is_create_cp ? 1 : 0
   cluster_name = aws_ecs_cluster.this.name
   capacity_providers = [aws_ecs_capacity_provider.this[0].name]
-  # capacity_providers = ["FARGATE"]
 
   default_capacity_provider_strategy {
     base              = 0
