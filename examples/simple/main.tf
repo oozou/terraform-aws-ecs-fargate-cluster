@@ -20,11 +20,11 @@ module "fargate_cluster" {
 
   # ALB
   is_create_alb              = true
-  is_public_alb              = true 
+  is_public_alb              = true
   enable_deletion_protection = false
   alb_listener_port          = 443
   alb_certificate_arn        = var.alb_certificate_arn
-  public_subnet_ids          = var.subnet_ids   # If is_public_alb is true, public_subnet_ids is required
+  public_subnet_ids          = var.subnet_ids # If is_public_alb is true, public_subnet_ids is required
 
   # ALB's DNS Record
   is_create_alb_dns_record = false
