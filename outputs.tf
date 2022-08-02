@@ -50,7 +50,6 @@ output "service_discovery_namespace" {
   value       = aws_service_discovery_private_dns_namespace.internal.id
 }
 
-
 /* ----------------------------------- CP ---------------------------------- */
 output "capacity_provider_name" {
   description = "Name of capacity provider."
