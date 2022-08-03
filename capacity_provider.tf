@@ -1,5 +1,5 @@
 resource "aws_ecs_capacity_provider" "this" {
-  count = local.is_create_cp ? 1 : 0
+  count = local.is_create_capacity_provider ? 1 : 0
   name  = format("%s-cp", local.cluster_name)
 
   auto_scaling_group_provider {
@@ -15,7 +15,7 @@ resource "aws_ecs_capacity_provider" "this" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "this" {
-  count              = local.is_create_cp ? 1 : 0
+  count              = local.is_create_capacity_provider ? 1 : 0
   cluster_name       = aws_ecs_cluster.this.name
   capacity_providers = [aws_ecs_capacity_provider.this[0].name]
 
