@@ -1,0 +1,14 @@
+generics_info = {
+  region      = "ap-southeast-1",
+  prefix      = "customer",
+  environment = "dev",
+  name        = "pass",
+  custom_tags = {
+    "Workspace" = "901-customer-sandbox-terraform"
+  }
+}
+
+vpc_id = "vpc-xxxxxxx"
+subnet_ids = ["subnet-xxxxxxxxx","subnet-xxxxxx"]
+alb_certificate_arn = "arn:aws:acm:ap-southeast-1:xxxxxxx:certificate/xxxxx-88e0-4a7b-8f7e-xxxxxxx"
+allow_access_from_principals = ["arn:aws:iam::xxxxxxxx:root"]

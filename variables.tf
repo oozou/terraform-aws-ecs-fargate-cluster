@@ -165,3 +165,12 @@ variable "additional_managed_policy_arns" {
   type        = list(string)
   default     = []
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                 Capacity Provider                          */
+/* -------------------------------------------------------------------------- */
+variable "capacity_provider_asg_config" {
+  description = "Auto scaling group arn for capacity provider EC2"
+  type        = map(any)
+  default     = null
+}

@@ -49,3 +49,9 @@ output "service_discovery_namespace" {
   description = "The ID of a namespace."
   value       = aws_service_discovery_private_dns_namespace.internal.id
 }
+
+/* ----------------------------------- CP ---------------------------------- */
+output "capacity_provider_name" {
+  description = "Name of capacity provider."
+  value       = try(aws_ecs_capacity_provider.this[0].name, "")
+}
