@@ -86,6 +86,11 @@ variable "alb_aws_security_group_id" {
   description = "(Require) when is_create_alb_security_group is set to `false`"
   default     = ""
 }
+variable "additional_security_group_alb_ingress_rules" {
+  description = "Map of ingress and any specific/overriding attributes to be created"
+  type        = any
+  default     = {}
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                     ALB                                    */
