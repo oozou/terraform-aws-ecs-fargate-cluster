@@ -2,7 +2,8 @@
 /*                                  Generics                                  */
 /* -------------------------------------------------------------------------- */
 locals {
-  cluster_name = "${var.prefix}-${var.environment}-${var.name}"
+  cluster_name_tmp = "${var.prefix}-${var.environment}-${var.name}"
+  cluster_name = substr("${local.cluster_name_tmp}", 0, min(19, length(local.cluster_name_tmp)))
 
   ecs_task_security_group_id = var.is_create_ecs_task_security_group ? aws_security_group.ecs_tasks[0].id : var.ecs_task_security_group_id
   alb_aws_security_group_id  = var.is_create_alb_security_group ? aws_security_group.alb[0].id : var.alb_aws_security_group_id
