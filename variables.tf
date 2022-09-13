@@ -69,6 +69,7 @@ variable "is_create_ecs_task_security_group" {
   type        = bool
   default     = true
 }
+
 variable "ecs_task_security_group_id" {
   type        = string
   description = "(Require) when is_create_alb_security_group is set to `false`"
@@ -81,11 +82,13 @@ variable "is_create_alb_security_group" {
   type        = bool
   default     = true
 }
+
 variable "alb_aws_security_group_id" {
-  type        = string
   description = "(Require) when is_create_alb_security_group is set to `false`"
+  type        = string
   default     = ""
 }
+
 variable "additional_security_group_alb_ingress_rules" {
   description = "Map of ingress and any specific/overriding attributes to be created"
   type        = any
