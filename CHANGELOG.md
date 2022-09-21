@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.0.6] - 2022-09-21
+
+### Changes
+
+- Module `route53` use from public registry 
+
 ## [1.0.5] - 2022-09-13
 
 ### Added

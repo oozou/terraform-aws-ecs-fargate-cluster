@@ -238,7 +238,8 @@ resource "aws_service_discovery_private_dns_namespace" "internal" {
 
 # /* --------------------------------- Route53 -------------------------------- */
 module "application_record" {
-  source = "git::ssh://git@github.com/oozou/terraform-aws-route53.git?ref=v1.0.0"
+  source  = "oozou/route53/aws"
+  version = "1.0.2"
 
   count = var.is_create_alb && var.is_create_alb_dns_record ? 1 : 0
 

@@ -25,7 +25,7 @@ Please see at `examples/simple`
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_application_record"></a> [application\_record](#module\_application\_record) | git::ssh://git@github.com/oozou/terraform-aws-route53.git | v1.0.0 |
+| <a name="module_application_record"></a> [application\_record](#module\_application\_record) | oozou/route53/aws | 1.0.2 |
 
 ## Resources
 
@@ -40,6 +40,7 @@ Please see at `examples/simple`
 | [aws_lb_listener.http](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener) | resource |
 | [aws_security_group.alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.ecs_tasks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_security_group_rule.alb_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.alb_to_tasks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.ecs_tasks_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.leaving_alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
@@ -58,6 +59,7 @@ Please see at `examples/simple`
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | The prefix name of customer to be displayed in AWS console and resource | `string` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC to deploy the cluster in | `string` | n/a | yes |
 | <a name="input_additional_managed_policy_arns"></a> [additional\_managed\_policy\_arns](#input\_additional\_managed\_policy\_arns) | Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Terraform will ignore policy attachments to this resource. When configured, Terraform will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., managed\_policy\_arns = []) will cause Terraform to remove all managed policy attachments. | `list(string)` | `[]` | no |
+| <a name="input_additional_security_group_alb_ingress_rules"></a> [additional\_security\_group\_alb\_ingress\_rules](#input\_additional\_security\_group\_alb\_ingress\_rules) | Map of ingress and any specific/overriding attributes to be created | `any` | `{}` | no |
 | <a name="input_additional_security_group_ingress_rules"></a> [additional\_security\_group\_ingress\_rules](#input\_additional\_security\_group\_ingress\_rules) | Map of ingress and any specific/overriding attributes to be created | `any` | `{}` | no |
 | <a name="input_alb_aws_security_group_id"></a> [alb\_aws\_security\_group\_id](#input\_alb\_aws\_security\_group\_id) | (Require) when is\_create\_alb\_security\_group is set to `false` | `string` | `""` | no |
 | <a name="input_alb_certificate_arn"></a> [alb\_certificate\_arn](#input\_alb\_certificate\_arn) | Certitificate ARN to link with ALB | `string` | `""` | no |
