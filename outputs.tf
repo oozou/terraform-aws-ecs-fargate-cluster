@@ -29,6 +29,11 @@ output "alb_arn" {
   value       = try(aws_lb.this[0].arn, "")
 }
 
+output "alb_id" {
+  description = "ID of alb"
+  value       = try(aws_lb.this[0].arn, "")
+}
+
 output "alb_listener_http_arn" {
   description = "ARN of the listener (matches id)."
   value       = try(aws_lb_listener.http[0].arn, "")
