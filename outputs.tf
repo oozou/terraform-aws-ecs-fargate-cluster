@@ -31,7 +31,7 @@ output "alb_arn" {
 
 output "alb_id" {
   description = "ID of alb"
-  value       = try(aws_lb.this[0].arn, "")
+  value       = try(aws_lb.this[0].id, "")
 }
 
 output "alb_listener_http_arn" {
