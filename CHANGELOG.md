@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.0.7] - 2022-12-22
+
+### Added
+
+- Added output `alb_id`
+
 ## [1.0.6] - 2022-09-21
 
 ### Changes
