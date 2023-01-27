@@ -128,6 +128,12 @@ variable "alb_certificate_arn" {
   default     = ""
 }
 
+variable "drop_invalid_header_fields" {
+  description = "Whether to drop invalid header field for ALB to support custom header field for application"
+  type = bool
+  default = true
+}
+
 variable "enable_deletion_protection" {
   description = "(Optional) If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false."
   type        = bool
