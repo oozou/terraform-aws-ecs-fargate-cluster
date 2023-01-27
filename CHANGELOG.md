@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.0.8] - 2023-01-27
+
+### Added
+
+- Added variable `drop_invalid_header_fields`
+
 ## [1.0.7] - 2022-12-22
 
 ### Added
