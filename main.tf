@@ -169,11 +169,11 @@ resource "aws_lb" "this" {
   drop_invalid_header_fields = true
   enable_deletion_protection = var.enable_deletion_protection
 
-  # access_logs {
-  #   bucket  = var.alb_access_logs_bucket
-  #   prefix  = "${var.account_alias}/${var.cluster_name}-alb"
-  #   enabled = true
-  # }
+  access_logs {
+    bucket  = try(var.alb_access_logs_bucket_name, null)
+    prefix  = "${local.cluster_name}-alb"
+    enabled = var.is_enable_access_log
+  }
 
   tags = merge(local.tags, { "Name" : var.is_public_alb ? format("%s-alb", local.cluster_name) : format("%s-internal-alb", local.cluster_name) })
 }

@@ -31,6 +31,18 @@ variable "is_enable_container_insights" {
   default     = true
 }
 
+variable "alb_access_logs_bucket_name" {
+  description = "ALB access_logs S3 bucket name."
+  type        = string
+}
+
+variable "is_enable_access_log" {
+  description = "Boolean to enable / disable access_logs. Defaults to false, even when bucket is specified."
+  type        = bool
+  default     = false
+}
+
+
 /* -------------------------------------------------------------------------- */
 /*                               Security Group                               */
 /* -------------------------------------------------------------------------- */
