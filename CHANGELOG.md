@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.0.8] - 2023-05-11
+
+### Added
+
+- variable `alb_access_logs_bucket_name`
+- variable `is_enable_access_log`
+- Support alb access_logs
+
+### Changes
+- cluster_name length change from 19 to 25
+
 ## [1.0.7] - 2022-12-22
 
 ### Added
