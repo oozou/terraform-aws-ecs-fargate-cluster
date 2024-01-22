@@ -34,6 +34,7 @@ variable "is_enable_container_insights" {
 variable "alb_access_logs_bucket_name" {
   description = "ALB access_logs S3 bucket name."
   type        = string
+  default     = ""
 }
 
 variable "is_enable_access_log" {
@@ -144,6 +145,17 @@ variable "enable_deletion_protection" {
   description = "(Optional) If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false."
   type        = bool
   default     = false
+}
+
+variable "default_fixed_response" {
+  description = "Map of listener default fixed response"
+  type        = any
+  default     = {
+    content_type = "text/plain"
+    message_body = "No service found"
+    status_code  = 503
+    order        = null
+  }
 }
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
