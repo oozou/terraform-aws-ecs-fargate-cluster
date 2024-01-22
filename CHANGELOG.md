@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.0.9] - 2024-01-22
+
+### Added
+
+- variable `default_fixed_response`
+- Support alb default fixed response to be customizable
+
 ## [1.0.8] - 2023-05-11
 
 ### Added

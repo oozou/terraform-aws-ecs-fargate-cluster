@@ -189,13 +189,13 @@ resource "aws_lb_listener" "http" {
   ssl_policy      = var.alb_listener_port == 443 ? "ELBSecurityPolicy-FS-1-2-Res-2019-08" : ""
 
   default_action {
-    type = "fixed-response"
-
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "No service found"
-      status_code  = "503"
-    }
+      type  = "fixed-response"
+      fixed_response {
+        content_type = var.default_fixed_response.content_type
+        message_body = try(var.default_fixed_response.message_body, null)
+        status_code  = try(var.default_fixed_response.status_code, null)
+      }
+      order = try(var.default_fixed_response.order, null)
   }
 }
 
