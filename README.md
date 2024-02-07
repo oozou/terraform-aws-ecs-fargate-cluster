@@ -19,7 +19,7 @@ Please see at `examples/simple`
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.00 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.8.0 |
 
 ## Modules
 
@@ -57,12 +57,13 @@ Please see at `examples/simple`
 | <a name="input_additional_managed_policy_arns"></a> [additional\_managed\_policy\_arns](#input\_additional\_managed\_policy\_arns) | Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Terraform will ignore policy attachments to this resource. When configured, Terraform will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., managed\_policy\_arns = []) will cause Terraform to remove all managed policy attachments. | `list(string)` | `[]` | no |
 | <a name="input_additional_security_group_alb_ingress_rules"></a> [additional\_security\_group\_alb\_ingress\_rules](#input\_additional\_security\_group\_alb\_ingress\_rules) | Map of ingress and any specific/overriding attributes to be created | `any` | `{}` | no |
 | <a name="input_additional_security_group_ingress_rules"></a> [additional\_security\_group\_ingress\_rules](#input\_additional\_security\_group\_ingress\_rules) | Map of ingress and any specific/overriding attributes to be created | `any` | `{}` | no |
-| <a name="input_alb_access_logs_bucket_name"></a> [alb\_access\_logs\_bucket\_name](#input\_alb\_access\_logs\_bucket\_name) | ALB access\_logs S3 bucket name. | `string` | n/a | yes |
+| <a name="input_alb_access_logs_bucket_name"></a> [alb\_access\_logs\_bucket\_name](#input\_alb\_access\_logs\_bucket\_name) | ALB access\_logs S3 bucket name. | `string` | `""` | no |
 | <a name="input_alb_aws_security_group_id"></a> [alb\_aws\_security\_group\_id](#input\_alb\_aws\_security\_group\_id) | (Require) when is\_create\_alb\_security\_group is set to `false` | `string` | `""` | no |
 | <a name="input_alb_certificate_arn"></a> [alb\_certificate\_arn](#input\_alb\_certificate\_arn) | Certitificate ARN to link with ALB | `string` | `""` | no |
 | <a name="input_alb_listener_port"></a> [alb\_listener\_port](#input\_alb\_listener\_port) | The port to listen on the ALB for public services (80/443, default 443) | `number` | `443` | no |
 | <a name="input_allow_access_from_principals"></a> [allow\_access\_from\_principals](#input\_allow\_access\_from\_principals) | A list of Account Numbers, ARNs, and Service Principals who needs to access the cluster | `list(string)` | `[]` | no |
 | <a name="input_capacity_provider_asg_config"></a> [capacity\_provider\_asg\_config](#input\_capacity\_provider\_asg\_config) | Auto scaling group arn for capacity provider EC2 | `map(any)` | `null` | no |
+| <a name="input_default_fixed_response"></a> [default\_fixed\_response](#input\_default\_fixed\_response) | Map of listener default fixed response | `any` | <pre>{<br>  "content_type": "text/plain",<br>  "message_body": "No service found",<br>  "order": null,<br>  "status_code": 503<br>}</pre> | no |
 | <a name="input_ecs_task_security_group_id"></a> [ecs\_task\_security\_group\_id](#input\_ecs\_task\_security\_group\_id) | (Require) when is\_create\_alb\_security\_group is set to `false` | `string` | `""` | no |
 | <a name="input_enable_deletion_protection"></a> [enable\_deletion\_protection](#input\_enable\_deletion\_protection) | (Optional) If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false. | `bool` | `false` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment Variable used as a prefix | `string` | n/a | yes |
