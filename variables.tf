@@ -150,7 +150,7 @@ variable "enable_deletion_protection" {
 variable "default_fixed_response" {
   description = "Map of listener default fixed response"
   type        = any
-  default     = {
+  default = {
     content_type = "text/plain"
     message_body = "No service found"
     status_code  = 503

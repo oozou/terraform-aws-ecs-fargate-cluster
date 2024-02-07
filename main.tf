@@ -169,10 +169,13 @@ resource "aws_lb" "this" {
   drop_invalid_header_fields = true
   enable_deletion_protection = var.enable_deletion_protection
 
-  access_logs {
-    bucket  = try(var.alb_access_logs_bucket_name, null)
-    prefix  = "${local.cluster_name}-alb"
-    enabled = var.is_enable_access_log
+  dynamic "access_logs" {
+    for_each = var.alb_access_logs_bucket_name == "" ? [] : [true]
+    content {
+      bucket  = try(var.alb_access_logs_bucket_name, null)
+      prefix  = "${local.cluster_name}-alb"
+      enabled = var.is_enable_access_log
+    }
   }
 
   tags = merge(local.tags, { "Name" : var.is_public_alb ? format("%s-alb", local.cluster_name) : format("%s-internal-alb", local.cluster_name) })
@@ -189,13 +192,13 @@ resource "aws_lb_listener" "http" {
   ssl_policy      = var.alb_listener_port == 443 ? "ELBSecurityPolicy-FS-1-2-Res-2019-08" : ""
 
   default_action {
-      type  = "fixed-response"
-      fixed_response {
-        content_type = var.default_fixed_response.content_type
-        message_body = try(var.default_fixed_response.message_body, null)
-        status_code  = try(var.default_fixed_response.status_code, null)
-      }
-      order = try(var.default_fixed_response.order, null)
+    type = "fixed-response"
+    fixed_response {
+      content_type = var.default_fixed_response.content_type
+      message_body = try(var.default_fixed_response.message_body, null)
+      status_code  = try(var.default_fixed_response.status_code, null)
+    }
+    order = try(var.default_fixed_response.order, null)
   }
 }
 
