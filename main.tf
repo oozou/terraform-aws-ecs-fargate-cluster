@@ -170,10 +170,10 @@ resource "aws_lb" "this" {
   enable_deletion_protection = var.enable_deletion_protection
 
   dynamic "access_logs" {
-    for_each = var.alb_access_logs_bucket_name == "" ? [] : [true]
+    for_each = var.is_enable_access_log ? [true] : []
     content {
       bucket  = try(var.alb_access_logs_bucket_name, null)
-      prefix  = "${local.cluster_name}-alb"
+      prefix  = format("%s-alb", local.cluster_name)
       enabled = var.is_enable_access_log
     }
   }
