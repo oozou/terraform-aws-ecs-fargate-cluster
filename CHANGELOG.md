@@ -1,5 +1,15 @@
 # Change Log
 
+## [1.0.10] - 2024-02-07
+
+### Changed
+
+- Update resource `aws_lb.this.access_logs` to support empty access_log with variable `var.alb_access_logs_bucket_name`
+
+### Removed
+
+- Remove local var `raise_is_public_subnet_ids_empty`, `raise_is_private_subnet_ids_empty`
+
 ## [1.0.9] - 2024-01-22
 
 ### Added
