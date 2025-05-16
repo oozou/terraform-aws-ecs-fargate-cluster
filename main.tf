@@ -115,11 +115,7 @@ module "application_alb" {
   enable_deletion_protection                  = var.enable_deletion_protection
   additional_security_group_alb_ingress_rules = var.additional_security_group_alb_ingress_rules
 
-  listener_https_fixed_response = {
-    content_type = "text/plain"
-    message_body = "No service found"
-    status_code  = "404"
-  }
+  listener_https_fixed_response = var.listener_https_fixed_response
 
   route53_hosted_zone_name    = var.route53_hosted_zone_name
   fully_qualified_domain_name = var.fully_qualified_domain_name

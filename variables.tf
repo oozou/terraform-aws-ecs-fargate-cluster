@@ -151,6 +151,20 @@ variable "ssl_policy" {
   type        = string
   default     = "ELBSecurityPolicy-2016-08"
 }
+
+variable "listener_https_fixed_response" {
+  description = "Have the HTTPS listener return a fixed response for the default action."
+  type = object({
+    content_type = string
+    message_body = string
+    status_code  = string
+  })
+  default = {
+    content_type = "text/plain"
+    message_body = "No service found"
+    status_code  = "404"
+  }
+}
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
 /* -------------------------------------------------------------------------- */
