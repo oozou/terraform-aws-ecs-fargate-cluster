@@ -113,7 +113,7 @@ module "application_alb" {
   ssl_policy                                  = var.ssl_policy
   enable_deletion_protection                  = var.enable_deletion_protection
   additional_security_group_alb_ingress_rules = var.additional_security_group_alb_ingress_rules
-
+  alb_s3_access_principals                  = var.alb_s3_access_principals
   listener_https_fixed_response = var.listener_https_fixed_response
 
   route53_hosted_zone_name    = var.route53_hosted_zone_name
