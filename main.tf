@@ -116,6 +116,7 @@ module "application_alb" {
   alb_s3_access_principals                    = var.alb_s3_access_principals
   alb_access_logs_bucket_name                 = var.alb_access_logs_bucket_name
   listener_https_fixed_response               = var.listener_https_fixed_response
+  is_create_discovery_namespace               = var.is_create_discovery_namespace
 
   route53_hosted_zone_name    = var.route53_hosted_zone_name
   fully_qualified_domain_name = var.fully_qualified_domain_name

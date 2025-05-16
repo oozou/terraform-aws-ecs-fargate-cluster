@@ -195,6 +195,12 @@ variable "fully_qualified_domain_name" {
   type        = string
   default     = ""
 }
+
+variable "is_create_discovery_namespace" {
+  description = "Flag to determine whether to create a discovery namespace"
+  type        = bool
+  default     = true
+}
 /* -------------------------------------------------------------------------- */
 /*                                  IAM Role                                  */
 /* -------------------------------------------------------------------------- */
