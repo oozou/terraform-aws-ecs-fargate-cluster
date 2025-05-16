@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.1.0] - 2025-05-16
+
+### Changed
+ - move alb resource to alb module
+
+### Added
+ - var `alb_s3_access_principals`
+ - var `listener_https_fixed_response`
+ - var `ssl_policy` 
+ - var `is_create_discovery_namespace`
+
 ## [1.0.8] - 2023-05-11
 
 ### Added
@@ -8,7 +19,7 @@
 - variable `is_enable_access_log`
 - Support alb access_logs
 
-### Changes
+### Changed
 - cluster_name length change from 19 to 25
 
 ## [1.0.7] - 2022-12-22
