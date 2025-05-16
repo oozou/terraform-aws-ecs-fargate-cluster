@@ -26,33 +26,33 @@ output "ecs_access_role_arn" {
 /* ----------------------------------- ALB ---------------------------------- */
 output "alb_arn" {
   description = "ARN of alb"
-  value       = try(aws_lb.this[0].arn, "")
+  value       = try(module.application_alb[0].alb_arn, "")
 }
 
 output "alb_id" {
   description = "ID of alb"
-  value       = try(aws_lb.this[0].id, "")
+  value       = try(module.application_alb[0].alb_id, "")
 }
 
 output "alb_listener_http_arn" {
   description = "ARN of the listener (matches id)."
-  value       = try(aws_lb_listener.http[0].arn, "")
+  value       = try(module.application_alb[0].alb_listener_http_arn, "")
 }
 
 output "alb_listener_https_redirect_arn" {
   description = "ARN of the listener (matches id)."
-  value       = try(aws_lb_listener.front_end_https_http_redirect[0].arn, "")
+  value       = try(module.application_alb[0].alb_listener_https_redirect_arn, "")
 }
 
 output "alb_dns_name" {
   description = "The DNS name of the load balancer."
-  value       = try(aws_lb.this[0].dns_name, "")
+  value       = try(module.application_alb[0].alb_dns_name, "")
 }
 
 /* ----------------------------------- DNS ---------------------------------- */
 output "service_discovery_namespace" {
   description = "The ID of a namespace."
-  value       = aws_service_discovery_private_dns_namespace.internal.id
+  value       = try(module.application_alb[0].service_discovery_namespace, "")
 }
 
 /* ----------------------------------- CP ---------------------------------- */

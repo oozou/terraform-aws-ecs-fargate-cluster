@@ -1,21 +1,15 @@
 # Change Log
 
-## [1.0.10] - 2024-02-07
+## [1.1.0] - 2025-05-16
 
 ### Changed
-
-- Update resource `aws_lb.this.access_logs` to support empty access_log with variable `var.alb_access_logs_bucket_name`
-
-### Removed
-
-- Remove local var `raise_is_public_subnet_ids_empty`, `raise_is_private_subnet_ids_empty`
-
-## [1.0.9] - 2024-01-22
+ - move alb resource to alb module
 
 ### Added
-
-- variable `default_fixed_response`
-- Support alb default fixed response to be customizable
+ - var `alb_s3_access_principals`
+ - var `listener_https_fixed_response`
+ - var `ssl_policy` 
+ - var `is_create_discovery_namespace`
 
 ## [1.0.8] - 2023-05-11
 
@@ -25,7 +19,7 @@
 - variable `is_enable_access_log`
 - Support alb access_logs
 
-### Changes
+### Changed
 - cluster_name length change from 19 to 25
 
 ## [1.0.7] - 2022-12-22

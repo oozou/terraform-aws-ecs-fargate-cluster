@@ -19,13 +19,13 @@ Please see at `examples/simple`
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.8.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.98.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_application_record"></a> [application\_record](#module\_application\_record) | oozou/route53/aws | 1.0.2 |
+| <a name="module_application_alb"></a> [application\_alb](#module\_application\_alb) | oozou/alb/aws | 1.0.0 |
 
 ## Resources
 
@@ -35,20 +35,11 @@ Please see at `examples/simple`
 | [aws_ecs_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_cluster) | resource |
 | [aws_ecs_cluster_capacity_providers.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_cluster_capacity_providers) | resource |
 | [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_lb.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb) | resource |
-| [aws_lb_listener.front_end_https_http_redirect](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener) | resource |
-| [aws_lb_listener.http](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener) | resource |
-| [aws_security_group.alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.ecs_tasks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
-| [aws_security_group_rule.alb_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.alb_to_tasks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.ecs_tasks_ingress](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
-| [aws_security_group_rule.leaving_alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
-| [aws_security_group_rule.public_to_alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
-| [aws_security_group_rule.public_to_alb_http](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.tasks_to_tasks_all](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_security_group_rule.tasks_to_world](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
-| [aws_service_discovery_private_dns_namespace.internal](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/service_discovery_private_dns_namespace) | resource |
 
 ## Inputs
 
@@ -61,6 +52,7 @@ Please see at `examples/simple`
 | <a name="input_alb_aws_security_group_id"></a> [alb\_aws\_security\_group\_id](#input\_alb\_aws\_security\_group\_id) | (Require) when is\_create\_alb\_security\_group is set to `false` | `string` | `""` | no |
 | <a name="input_alb_certificate_arn"></a> [alb\_certificate\_arn](#input\_alb\_certificate\_arn) | Certitificate ARN to link with ALB | `string` | `""` | no |
 | <a name="input_alb_listener_port"></a> [alb\_listener\_port](#input\_alb\_listener\_port) | The port to listen on the ALB for public services (80/443, default 443) | `number` | `443` | no |
+| <a name="input_alb_s3_access_principals"></a> [alb\_s3\_access\_principals](#input\_alb\_s3\_access\_principals) | n/a | <pre>list(object({<br>    type        = string<br>    identifiers = list(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_allow_access_from_principals"></a> [allow\_access\_from\_principals](#input\_allow\_access\_from\_principals) | A list of Account Numbers, ARNs, and Service Principals who needs to access the cluster | `list(string)` | `[]` | no |
 | <a name="input_capacity_provider_asg_config"></a> [capacity\_provider\_asg\_config](#input\_capacity\_provider\_asg\_config) | Auto scaling group arn for capacity provider EC2 | `map(any)` | `null` | no |
 | <a name="input_default_fixed_response"></a> [default\_fixed\_response](#input\_default\_fixed\_response) | Map of listener default fixed response | `any` | <pre>{<br>  "content_type": "text/plain",<br>  "message_body": "No service found",<br>  "order": null,<br>  "status_code": 503<br>}</pre> | no |
@@ -71,17 +63,20 @@ Please see at `examples/simple`
 | <a name="input_is_create_alb"></a> [is\_create\_alb](#input\_is\_create\_alb) | Whether to create alb or not | `bool` | `true` | no |
 | <a name="input_is_create_alb_dns_record"></a> [is\_create\_alb\_dns\_record](#input\_is\_create\_alb\_dns\_record) | Whether to create ALB dns record or not | `bool` | `true` | no |
 | <a name="input_is_create_alb_security_group"></a> [is\_create\_alb\_security\_group](#input\_is\_create\_alb\_security\_group) | Whether to create ALB security group or not | `bool` | `true` | no |
+| <a name="input_is_create_discovery_namespace"></a> [is\_create\_discovery\_namespace](#input\_is\_create\_discovery\_namespace) | Flag to determine whether to create a discovery namespace | `bool` | `true` | no |
 | <a name="input_is_create_ecs_task_security_group"></a> [is\_create\_ecs\_task\_security\_group](#input\_is\_create\_ecs\_task\_security\_group) | Whether to create ECS tasks security group or not | `bool` | `true` | no |
 | <a name="input_is_create_role"></a> [is\_create\_role](#input\_is\_create\_role) | Whether to create ecs role or not | `bool` | `true` | no |
 | <a name="input_is_enable_access_log"></a> [is\_enable\_access\_log](#input\_is\_enable\_access\_log) | Boolean to enable / disable access\_logs. Defaults to false, even when bucket is specified. | `bool` | `false` | no |
 | <a name="input_is_enable_container_insights"></a> [is\_enable\_container\_insights](#input\_is\_enable\_container\_insights) | Whether to be used to enable CloudWatch Container Insights for a cluster. | `bool` | `true` | no |
 | <a name="input_is_ignore_unsecured_connection"></a> [is\_ignore\_unsecured\_connection](#input\_is\_ignore\_unsecured\_connection) | Whether to by pass the HTTPs endpoints required or not | `bool` | `false` | no |
 | <a name="input_is_public_alb"></a> [is\_public\_alb](#input\_is\_public\_alb) | Flag for Internal/Public ALB. ALB is production env should be public | `bool` | `false` | no |
+| <a name="input_listener_https_fixed_response"></a> [listener\_https\_fixed\_response](#input\_listener\_https\_fixed\_response) | Have the HTTPS listener return a fixed response for the default action. | <pre>object({<br>    content_type = string<br>    message_body = string<br>    status_code  = string<br>  })</pre> | <pre>{<br>  "content_type": "text/plain",<br>  "message_body": "No service found",<br>  "status_code": "404"<br>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the ECS cluster to create | `string` | n/a | yes |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | The prefix name of customer to be displayed in AWS console and resource | `string` | n/a | yes |
 | <a name="input_private_subnet_ids"></a> [private\_subnet\_ids](#input\_private\_subnet\_ids) | Private subnets for container deployment | `list(string)` | `[]` | no |
 | <a name="input_public_subnet_ids"></a> [public\_subnet\_ids](#input\_public\_subnet\_ids) | Public subnets for AWS Application Load Balancer deployment | `list(string)` | `[]` | no |
 | <a name="input_route53_hosted_zone_name"></a> [route53\_hosted\_zone\_name](#input\_route53\_hosted\_zone\_name) | The domain name in Route53 to fetch the hosted zone, i.e. example.com, mango-dev.blue.cloud | `string` | `""` | no |
+| <a name="input_ssl_policy"></a> [ssl\_policy](#input\_ssl\_policy) | The SSL policy for the ALB listener when using HTTPS | `string` | `"ELBSecurityPolicy-2016-08"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Custom tags which can be passed on to the AWS resources. They should be key value pairs having distinct keys | `map(any)` | `{}` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC to deploy the cluster in | `string` | n/a | yes |
 

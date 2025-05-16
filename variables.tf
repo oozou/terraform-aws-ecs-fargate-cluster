@@ -31,19 +31,6 @@ variable "is_enable_container_insights" {
   default     = true
 }
 
-variable "alb_access_logs_bucket_name" {
-  description = "ALB access_logs S3 bucket name."
-  type        = string
-  default     = ""
-}
-
-variable "is_enable_access_log" {
-  description = "Boolean to enable / disable access_logs. Defaults to false, even when bucket is specified."
-  type        = bool
-  default     = false
-}
-
-
 /* -------------------------------------------------------------------------- */
 /*                               Security Group                               */
 /* -------------------------------------------------------------------------- */
@@ -147,16 +134,47 @@ variable "enable_deletion_protection" {
   default     = false
 }
 
-variable "default_fixed_response" {
-  description = "Map of listener default fixed response"
-  type        = any
+variable "ssl_policy" {
+  description = "The SSL policy for the ALB listener when using HTTPS"
+  type        = string
+  default     = "ELBSecurityPolicy-2016-08"
+}
+
+variable "listener_https_fixed_response" {
+  description = "Have the HTTPS listener return a fixed response for the default action."
+  type = object({
+    content_type = string
+    message_body = string
+    status_code  = string
+  })
   default = {
     content_type = "text/plain"
     message_body = "No service found"
-    status_code  = 503
-    order        = null
+    status_code  = "404"
   }
 }
+
+variable "alb_s3_access_principals" {
+  type = list(object({
+    type        = string
+    identifiers = list(string)
+  }))
+
+  default = []
+}
+
+variable "alb_access_logs_bucket_name" {
+  description = "ALB access_logs S3 bucket name."
+  type        = string
+  default     = ""
+}
+
+variable "is_enable_access_log" {
+  description = "Boolean to enable / disable access_logs. Defaults to false, even when bucket is specified."
+  type        = bool
+  default     = false
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
 /* -------------------------------------------------------------------------- */
@@ -176,6 +194,12 @@ variable "fully_qualified_domain_name" {
   description = "The domain name for the ACM cert for attaching to the ALB i.e. *.example.com, www.amazing.com"
   type        = string
   default     = ""
+}
+
+variable "is_create_discovery_namespace" {
+  description = "Flag to determine whether to create a discovery namespace"
+  type        = bool
+  default     = true
 }
 /* -------------------------------------------------------------------------- */
 /*                                  IAM Role                                  */
