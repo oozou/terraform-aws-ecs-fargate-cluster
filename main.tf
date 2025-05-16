@@ -91,9 +91,8 @@ resource "aws_security_group_rule" "alb_to_tasks" {
 /*                                      ALB                                   */
 /* -------------------------------------------------------------------------- */
 module "application_alb" {
-  # source  = "oozou/alb/aws"
-  # version = "1.0.0"
-  source = "git::ssh://git@github.com/oozou/terraform-aws-alb.git?ref=main"
+  source  = "oozou/alb/aws"
+  version = "1.0.0"
 
   count = var.is_create_alb ? 1 : 0
   # This module is used to create an ALB and its associated resources
