@@ -8,7 +8,7 @@ generics_info = {
   }
 }
 
-vpc_id = "vpc-xxxxxxx"
-subnet_ids = ["subnet-xxxxxxxxx","subnet-xxxxxx"]
-alb_certificate_arn = "arn:aws:acm:ap-southeast-1:xxxxxxx:certificate/xxxxx-88e0-4a7b-8f7e-xxxxxxx"
-allow_access_from_principals = ["arn:aws:iam::xxxxxxxx:root"]
+vpc_id = "vpc-03795061a6985e99c"
+subnet_ids = ["subnet-07527c8e07c10e261","subnet-0687c79c9530c6518"]
+alb_certificate_arn = "arn:aws:acm:ap-southeast-1:469648812748:certificate/e1b9bdab-3eba-4fd3-bf5e-0dd96f96cae5"
+allow_access_from_principals = ["arn:aws:iam::469648812748:root"]

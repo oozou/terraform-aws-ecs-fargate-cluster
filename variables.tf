@@ -145,6 +145,12 @@ variable "enable_deletion_protection" {
   type        = bool
   default     = false
 }
+
+variable "ssl_policy" {
+  description = "The SSL policy for the ALB listener when using HTTPS"
+  type        = string
+  default     = "ELBSecurityPolicy-2016-08"
+}
 /* -------------------------------------------------------------------------- */
 /*                                     DNS                                    */
 /* -------------------------------------------------------------------------- */
