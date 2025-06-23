@@ -123,7 +123,7 @@ variable "alb_listener_port" {
 }
 
 variable "alb_certificate_arn" {
-  description = "Certitificate ARN to link with ALB"
+  description = "Certificate ARN to link with ALB"
   type        = string
   default     = ""
 }
