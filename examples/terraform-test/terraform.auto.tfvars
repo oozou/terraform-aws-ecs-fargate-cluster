@@ -38,4 +38,4 @@ is_public_alb                           = true
 enable_deletion_protection              = false # Use cloudfront forwarding traffic
 is_enable_alb_access_log                = false
 is_create_alb_dns_record                = true
-alb_fully_qualified_domain_name        = "terraform-test.devops.team.oozou.com"
+alb_fully_qualified_domain_name         = "terraform-test.devops.team.oozou.com"
